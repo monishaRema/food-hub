@@ -1,53 +1,87 @@
 # Frontend Project Overview
 
-## Purpose
+## Summary
 
-The FoodHub frontend is responsible for presenting the meal ordering platform to users across three roles:
+FoodHub Frontend is the customer-facing and dashboard-facing web client for the FoodHub platform. It sits on top of the current Express and Prisma backend and should mirror that backend's real capabilities instead of assuming extra features.
 
-- Public users
-- Customers
-- Providers
-- Admins
+The frontend serves four user contexts:
 
-It consumes the backend API and enforces UI-level flows aligned with backend business rules.
+- public visitors
+- authenticated customers
+- providers
+- admins
 
-## Key Backend Constraints (Must Not Be Violated)
+## Product Areas
 
-Derived from backend rules:
+### Public experience
 
-- one order belongs to one provider
-- only available meals can be ordered
-- order lifecycle is strictly enforced
+- browse available meals
+- search and sort meals
+- view meal details and meal reviews
+- browse providers
+- view provider details
+- register and log in
+
+### Customer experience
+
+- view current profile
+- create orders
+- view own orders
+- view single order details
+- cancel eligible orders
+- review delivered meals
+
+### Provider experience
+
+- create provider profile
+- manage own meals
+- view provider orders
+- update provider order status
+
+### Admin experience
+
+- manage categories
+- manage user status
+
+## Backend Rules The Frontend Must Respect
+
+- one order can include meals from only one provider
+- only meals with `AVAILABLE` status can be ordered
+- duplicate meal ids in one order are rejected
+- order totals are computed by backend data, not by client input
 - only delivered orders can be reviewed
-- one user can review one meal once
+- a user can review a meal only once
+- provider actions are scoped to the authenticated provider account
 
-Frontend must reflect these constraints through UI and UX.
+## Important Current Backend Realities
+
+- base path is `/api`, not `/api/v1`
+- auth is cookie-based, not bearer-token based
+- public provider detail does not currently include a provider meal list
+- `GET /api/orders` may currently return `401` for a user with no orders
+
+These are not just implementation details. They should influence page design, empty states, and integration code.
 
 ## Frontend Responsibilities
 
-- Render server data efficiently
-- Provide forms for user actions
-- Handle loading, error, and empty states
-- Maintain navigation and layout consistency
-- Respect backend validation rules
+- present backend data clearly
+- guide users through valid flows
+- surface backend validation and business-rule failures well
+- keep public and dashboard experiences organized
+- use Next.js App Router patterns appropriately
 
-## Non-Responsibilities
+## Frontend Non-Responsibilities
 
-Frontend should not:
+The frontend should not:
 
-- calculate totals
-- enforce business logic alone
-- store sensitive data
-- trust local role checks
+- act as the final source of authorization
+- invent unsupported backend filters or endpoints
+- calculate trusted totals
+- send ownership fields the backend can derive
+- store auth tokens in browser storage
 
 ## Data Flow
 
 ```txt
-UI → fetch → backend API → DB
-         ↓
-      response
-         ↓
-       render
+Next.js route -> feature UI -> API layer -> backend -> response normalization -> render
 ```
-
-All critical decisions remain in backend services.

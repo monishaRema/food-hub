@@ -1,60 +1,32 @@
 # FoodHub Frontend
 
-FoodHub Frontend is the Next.js client application for the FoodHub meal ordering platform. It consumes the FoodHub Backend API and provides public meal browsing, customer ordering, provider meal management, provider order processing, reviews, and admin-facing management screens.
+FoodHub Frontend is the Next.js App Router client for the FoodHub meal ordering platform. It is being built against the backend in `monishaRema/FoodHub-Backend`, and the documentation here reflects that backend's `main` branch as reviewed on April 28, 2026.
 
-The backend repository is `FoodHub-Backend`. The frontend must follow the backend API contract documented there, especially the cookie-based authentication model and role-based route separation.
+The goal of this repo is to deliver a role-aware frontend for:
 
-## Tech Stack
+- public catalog browsing
+- customer ordering and reviews
+- provider meal and order management
+- admin category and user management
 
-- Next.js App Router
-- React
-- TypeScript
-- Tailwind CSS
-- shadcn/ui
-- Backend API: Express, TypeScript, Prisma, PostgreSQL
-
-Current frontend package versions:
+## Stack
 
 - Next.js `16.2.4`
 - React `19.2.4`
-- Tailwind CSS `4.x`
+- TypeScript `5`
+- Tailwind CSS `4`
 
-## Core Product Scope
+The app uses the App Router, where Server Components are the default and Client Components should be used only where browser interactivity is required.
 
-### Public users
+## Backend Alignment
 
-- Browse meals
-- Search and sort meals
-- View meal details
-- View meal reviews
-- Browse providers
-- View provider details
-- Register and login
+Backend repository:
 
-### Customers
+```txt
+https://github.com/monishaRema/FoodHub-Backend
+```
 
-- View profile
-- Create orders
-- View own orders
-- View order details
-- Cancel eligible orders
-- Review delivered meals
-
-### Providers
-
-- Create provider profile
-- Manage own meals
-- View provider orders
-- Update order status through the valid lifecycle
-
-### Admins
-
-- Manage users
-- Manage categories
-
-## Backend Contract Summary
-
-Base API path:
+Current backend base path:
 
 ```txt
 /api
@@ -62,12 +34,12 @@ Base API path:
 
 Authentication model:
 
-- Login sets `access-token` and `refresh-token` as `httpOnly` cookies.
-- Protected requests must include cookies.
-- Frontend fetch calls to protected API routes must use `credentials: "include"` when calling the backend directly from the browser.
-- Server-side calls must forward the incoming cookie header when needed.
+- login sets `access-token` and `refresh-token` as `httpOnly` cookies
+- protected requests depend on cookies, not bearer headers
+- browser requests to protected endpoints must use `credentials: "include"`
+- server-side requests should forward the incoming cookie header when needed
 
-Standard success response:
+Standard response shapes:
 
 ```json
 {
@@ -76,8 +48,6 @@ Standard success response:
   "data": {}
 }
 ```
-
-Standard error response:
 
 ```json
 {
@@ -92,7 +62,45 @@ Standard error response:
 }
 ```
 
-## Required Environment Variables
+Important backend quirks the frontend must account for today:
+
+- public provider detail does not include provider meals
+- category read endpoints are authenticated, but not admin-only
+- `GET /api/orders` may currently return `401` when the user has no orders
+- provider order status logic exists, but route wiring is documented as inconsistent in the backend docs
+
+## Product Scope
+
+### Public
+
+- browse available meals
+- search and sort meals
+- view meal details and reviews
+- browse providers
+- view provider details
+- register and log in
+
+### Customer
+
+- view current profile
+- create orders from one provider at a time
+- view order history and order details
+- cancel eligible orders
+- submit reviews after delivery
+
+### Provider
+
+- create provider profile
+- manage own meals
+- view provider orders
+- progress order status through the supported lifecycle
+
+### Admin
+
+- manage categories
+- manage user status
+
+## Environment
 
 Create `.env.local`:
 
@@ -100,9 +108,9 @@ Create `.env.local`:
 NEXT_PUBLIC_API_BASE_URL=http://localhost:5000/api
 ```
 
-Do not store secrets in the frontend. JWT secrets, database URLs, and bcrypt configuration belong only in the backend.
+If the frontend later adds a server-only API base URL, keep it separate from public browser config. Do not place backend secrets in this repository.
 
-## Getting Started
+## Local Development
 
 Install dependencies:
 
@@ -110,16 +118,10 @@ Install dependencies:
 pnpm install
 ```
 
-Run the development server:
+Run development server:
 
 ```bash
 pnpm dev
-```
-
-Open:
-
-```txt
-http://localhost:3000
 ```
 
 Lint:
@@ -140,37 +142,26 @@ Start production build:
 pnpm start
 ```
 
-## Suggested Frontend Structure
+Default local app URL:
 
 ```txt
-src/
-  app/
-    (public)/
-    (auth)/
-    (customer)/
-    (provider)/
-    (admin)/
-  components/
-    ui/
-    shared/
-    forms/
-  features/
-    auth/
-    meals/
-    orders/
-    provider/
-    reviews/
-    admin/
-  lib/
-    api/
-    auth/
-    utils/
-  types/
+http://localhost:3000
 ```
+
+## Current App Shape
+
+The current repo is still in scaffold stage. It already uses:
+
+- a root App Router layout at `src/app/layout.tsx`
+- a public route group at `src/app/(commonLayout)`
+- a dashboard route-group placeholder at `src/app/(dashboardLayout)`
+- starter routes for home, meal list/detail, shop list/detail, login, and signup
+
+The documentation below defines the intended structure to grow this into a full product frontend.
 
 ## Documentation
 
-Project-specific frontend docs live in [`docs`](./docs):
+Frontend planning docs live in [`docs`](./docs):
 
 - [01-project-overview.md](./docs/01-project-overview.md)
 - [02-frontend-architecture.md](./docs/02-frontend-architecture.md)
@@ -181,15 +172,18 @@ Project-specific frontend docs live in [`docs`](./docs):
 - [07-ui-system.md](./docs/07-ui-system.md)
 - [08-development-roadmap.md](./docs/08-development-roadmap.md)
 
-## Engineering Rules
+Suggested reading order:
 
-- Do not trust client-side role checks alone. Backend authorization remains the source of truth.
-- Do not send `userId`, `providerId`, order total, meal price, or role-sensitive fields from frontend when backend can infer them.
-- Keep backend response handling centralized.
-- Use server components for public read-heavy pages where possible.
-- Use client components only for interactive UI, forms, optimistic actions, and local state.
-- Keep route groups aligned with product roles: public, auth, customer, provider, admin.
+1. `01-project-overview.md`
+2. `03-routing-plan.md`
+3. `04-api-integration.md`
+4. `05-auth-and-rbac.md`
 
-## Current Status
+## Working Rules
 
-This frontend is at initial setup stage. The README and docs define the intended implementation direction before feature development begins.
+- treat backend authorization as the source of truth
+- never send role-sensitive identifiers the backend can derive itself
+- centralize API calls and response parsing
+- prefer Server Components for read-heavy public views
+- use Client Components for forms, local state, browser APIs, and interactive controls
+- keep role-aware dashboard areas isolated from public catalog routes
