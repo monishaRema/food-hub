@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Menu, ShoppingCart, UtensilsCrossed } from "lucide-react";
 
 import { Accordion } from "@/components/ui/accordion";
@@ -18,9 +19,11 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { cn } from "@/lib/utils";
+
 import { env } from "@/env";
-import Link from "next/link";
+import { cn } from "@/lib/utils";
+import { useAuth } from "@/providers/AuthProvider";
+import { useLogout } from "@/hooks/useLogout";
 
 interface MenuItem {
   title: string;
@@ -30,7 +33,7 @@ interface MenuItem {
   items?: MenuItem[];
 }
 
-interface Navbar1Props {
+interface NavbarProps {
   className?: string;
   logo?: {
     url: string;
@@ -61,33 +64,36 @@ const Navbar = ({
   },
   menu = [
     { title: "Home", url: "/" },
-    {
-      title: "Providers",
-      url: "/providers",
-    },
-    {
-      title: "Meals",
-      url: "/meals",
-    },
+    { title: "Providers", url: "/providers" },
+    { title: "Meals", url: "/meals" },
   ],
   auth = {
     login: { title: "Login", url: "/auth/login" },
     signup: { title: "Sign up", url: "/auth/signup" },
   },
   className,
-}: Navbar1Props) => {
+}: NavbarProps) => {
+  const { user, isAuthenticated, isLoading } = useAuth();
+  const logout = useLogout();
+
+  const dashboardUrl =
+    user?.role === "ADMIN"
+      ? "/dashboard/admin"
+      : user?.role === "PROVIDER"
+        ? "/dashboard/provider"
+        : "/dashboard";
+
   return (
     <section
       className={cn(
         "border-b border-border/60 bg-[#f7f1e9] text-foreground",
-        className
+        className,
       )}
     >
       <div className="container mx-auto px-6 py-4">
         {/* Desktop Menu */}
         <nav className="hidden items-center justify-between lg:flex">
           <div className="flex items-center gap-6">
-            {/* Logo */}
             <Link href={logo.url} className="flex items-center gap-2">
               <span className="flex size-9 items-center justify-center rounded-xl bg-[#f97316] text-white shadow-sm">
                 <UtensilsCrossed className="size-4" />
@@ -96,6 +102,7 @@ const Navbar = ({
                 {logo.title}
               </span>
             </Link>
+
             <div className="flex items-center">
               <NavigationMenu>
                 <NavigationMenuList>
@@ -104,39 +111,65 @@ const Navbar = ({
               </NavigationMenu>
             </div>
           </div>
+
           <div className="flex gap-2">
-            <Button
-              asChild
-              variant="outline"
-              size="icon"
-              className="border-border/70 bg-transparent hover:bg-[#efe4d7]"
-            >
-              <Link href="/orders" aria-label="My orders">
-                <ShoppingCart className="size-4" />
-              </Link>
-            </Button>
-            <Button
-              asChild
-              variant="outline"
-              size="sm"
-              className="border-border/70 bg-transparent hover:bg-[#efe4d7]"
-            >
-              <Link href={auth.login.url}>{auth.login.title}</Link>
-            </Button>
-            <Button
-              asChild
-              size="sm"
-              className="bg-[#f97316] text-white hover:bg-[#ea6b12]"
-            >
-              <Link href={auth.signup.url}>{auth.signup.title}</Link>
-            </Button>
+            {isLoading ? null : isAuthenticated ? (
+              <>
+                <Button
+                  asChild
+                  variant="outline"
+                  size="icon"
+                  className="border-border/70 bg-transparent hover:bg-[#efe4d7]"
+                >
+                  <Link href="/orders" aria-label="My orders">
+                    <ShoppingCart className="size-4" />
+                  </Link>
+                </Button>
+
+                <Button
+                  asChild
+                  variant="outline"
+                  size="sm"
+                  className="border-border/70 bg-transparent hover:bg-[#efe4d7]"
+                >
+                  <Link href={dashboardUrl}>Dashboard</Link>
+                </Button>
+
+                <Button
+                  type="button"
+                  size="sm"
+                  onClick={logout}
+                  className="bg-[#f97316] text-white hover:bg-[#ea6b12]"
+                >
+                  Logout
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button
+                  asChild
+                  variant="outline"
+                  size="sm"
+                  className="border-border/70 bg-transparent hover:bg-[#efe4d7]"
+                >
+                  <Link href={auth.login.url}>{auth.login.title}</Link>
+                </Button>
+
+                <Button
+                  asChild
+                  size="sm"
+                  className="bg-[#f97316] text-white hover:bg-[#ea6b12]"
+                >
+                  <Link href={auth.signup.url}>{auth.signup.title}</Link>
+                </Button>
+              </>
+            )}
           </div>
         </nav>
 
         {/* Mobile Menu */}
         <div className="block lg:hidden">
           <div className="flex items-center justify-between">
-            {/* Logo */}
             <Link href={logo.url} className="flex items-center gap-2">
               <span className="flex size-9 items-center justify-center rounded-xl bg-[#f97316] text-white shadow-sm">
                 <UtensilsCrossed className="size-4" />
@@ -145,6 +178,7 @@ const Navbar = ({
                 {logo.title}
               </span>
             </Link>
+
             <Sheet>
               <SheetTrigger asChild>
                 <Button
@@ -155,6 +189,7 @@ const Navbar = ({
                   <Menu className="size-4" />
                 </Button>
               </SheetTrigger>
+
               <SheetContent className="overflow-y-auto bg-[#f7f1e9]">
                 <SheetHeader>
                   <SheetTitle>
@@ -169,6 +204,7 @@ const Navbar = ({
                     </Link>
                   </SheetTitle>
                 </SheetHeader>
+
                 <div className="flex flex-col gap-6 p-4">
                   <Accordion
                     type="single"
@@ -179,29 +215,58 @@ const Navbar = ({
                   </Accordion>
 
                   <div className="flex flex-col gap-3">
-                    <Button
-                      asChild
-                      variant="outline"
-                      className="border-border/70 bg-transparent hover:bg-[#efe4d7]"
-                    >
-                      <Link href="/orders" className="flex items-center gap-2">
-                        <ShoppingCart className="size-4" />
-                        <span>My orders</span>
-                      </Link>
-                    </Button>
-                    <Button
-                      asChild
-                      variant="outline"
-                      className="border-border/70 bg-transparent hover:bg-[#efe4d7]"
-                    >
-                      <Link href={auth.login.url}>{auth.login.title}</Link>
-                    </Button>
-                    <Button
-                      asChild
-                      className="bg-[#f97316] text-white hover:bg-[#ea6b12]"
-                    >
-                      <Link href={auth.signup.url}>{auth.signup.title}</Link>
-                    </Button>
+                    {isLoading ? null : isAuthenticated ? (
+                      <>
+                        <Button
+                          asChild
+                          variant="outline"
+                          className="border-border/70 bg-transparent hover:bg-[#efe4d7]"
+                        >
+                          <Link
+                            href="/orders"
+                            className="flex items-center gap-2"
+                          >
+                            <ShoppingCart className="size-4" />
+                            <span>My orders</span>
+                          </Link>
+                        </Button>
+
+                        <Button
+                          asChild
+                          variant="outline"
+                          className="border-border/70 bg-transparent hover:bg-[#efe4d7]"
+                        >
+                          <Link href={dashboardUrl}>Dashboard</Link>
+                        </Button>
+
+                        <Button
+                          type="button"
+                          onClick={logout}
+                          className="bg-[#f97316] text-white hover:bg-[#ea6b12]"
+                        >
+                          Logout
+                        </Button>
+                      </>
+                    ) : (
+                      <>
+                        <Button
+                          asChild
+                          variant="outline"
+                          className="border-border/70 bg-transparent hover:bg-[#efe4d7]"
+                        >
+                          <Link href={auth.login.url}>{auth.login.title}</Link>
+                        </Button>
+
+                        <Button
+                          asChild
+                          className="bg-[#f97316] text-white hover:bg-[#ea6b12]"
+                        >
+                          <Link href={auth.signup.url}>
+                            {auth.signup.title}
+                          </Link>
+                        </Button>
+                      </>
+                    )}
                   </div>
                 </div>
               </SheetContent>

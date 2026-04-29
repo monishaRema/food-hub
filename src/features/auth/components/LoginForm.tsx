@@ -24,12 +24,14 @@ import { useForm } from "@tanstack/react-form";
 import { toast } from "sonner";
 import * as z from "zod";
 import Link from "next/link";
+import { useAuth } from "@/providers/AuthProvider";
 
 export function LoginForm({ ...props }: React.ComponentProps<typeof Card>) {
   const router = useRouter();
+  const { setUser } = useAuth();
 
   const loginSchema = z.object({
-    email: z.string().trim().email("Invalid email address"),
+    email: z.string().trim().pipe(z.email("Invalid email address")),
     password: z.string().min(6, "Password must be at least 6 characters"),
   });
 
@@ -75,6 +77,8 @@ export function LoginForm({ ...props }: React.ComponentProps<typeof Card>) {
 
           throw new Error(errorMessage);
         }
+      
+        setUser(result.data);
 
         toast.success("Login successful", { id: toastId });
         router.push("/");
@@ -90,7 +94,9 @@ export function LoginForm({ ...props }: React.ComponentProps<typeof Card>) {
   return (
     <Card {...props}>
       <CardHeader>
-        <CardTitle className="text-xl font-bold">Login to your account</CardTitle>
+        <CardTitle className="text-xl font-bold">
+          Login to your account
+        </CardTitle>
         <CardDescription>
           Enter your email and password below to login
         </CardDescription>
