@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Menu, ShoppingCart, UtensilsCrossed } from "lucide-react";
 
 import { Accordion } from "@/components/ui/accordion";
@@ -21,7 +22,7 @@ import {
 } from "@/components/ui/sheet";
 
 import { env } from "@/env";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
 import { useAuth } from "@/providers/AuthProvider";
 import { useLogout } from "@/hooks/useLogout";
 
@@ -75,6 +76,7 @@ const Navbar = ({
 }: NavbarProps) => {
   const { user, isAuthenticated, isLoading } = useAuth();
   const logout = useLogout();
+  const pathname = usePathname();
 
   const dashboardUrl =
     user?.role === "ADMIN"
@@ -82,6 +84,18 @@ const Navbar = ({
       : user?.role === "PROVIDER"
         ? "/dashboard/provider"
         : "/dashboard";
+
+  const isActivePath = (href: string) => {
+    if (href === "/") {
+      return pathname === "/";
+    }
+
+    if (href === "/dashboard") {
+      return pathname.startsWith("/dashboard");
+    }
+
+    return pathname === href || pathname.startsWith(`${href}/`);
+  };
 
   return (
     <section
@@ -106,7 +120,9 @@ const Navbar = ({
             <div className="flex items-center">
               <NavigationMenu>
                 <NavigationMenuList>
-                  {menu.map((item) => renderMenuItem(item))}
+                  {menu.map((item) =>
+                    renderMenuItem(item, isActivePath(item.url)),
+                  )}
                 </NavigationMenuList>
               </NavigationMenu>
             </div>
@@ -119,7 +135,11 @@ const Navbar = ({
                   asChild
                   variant="outline"
                   size="icon"
-                  className="border-border/70 bg-transparent hover:bg-[#efe4d7]"
+                  className={cn(
+                    "border-border/70 bg-transparent hover:bg-[#efe4d7]",
+                    isActivePath("/orders") &&
+                      "border-[#f97316]/30 bg-[#fff2e8] text-[#f97316] hover:bg-[#fff2e8]",
+                  )}
                 >
                   <Link href="/orders" aria-label="My orders">
                     <ShoppingCart className="size-4" />
@@ -130,7 +150,11 @@ const Navbar = ({
                   asChild
                   variant="outline"
                   size="sm"
-                  className="border-border/70 bg-transparent hover:bg-[#efe4d7]"
+                  className={cn(
+                    "border-border/70 bg-transparent hover:bg-[#efe4d7]",
+                    isActivePath("/dashboard") &&
+                      "border-[#f97316]/30 bg-[#fff2e8] text-[#f97316] hover:bg-[#fff2e8]",
+                  )}
                 >
                   <Link href={dashboardUrl}>Dashboard</Link>
                 </Button>
@@ -150,7 +174,11 @@ const Navbar = ({
                   asChild
                   variant="outline"
                   size="sm"
-                  className="border-border/70 bg-transparent hover:bg-[#efe4d7]"
+                  className={cn(
+                    "border-border/70 bg-transparent hover:bg-[#efe4d7]",
+                    isActivePath(auth.login.url) &&
+                      "border-[#f97316]/30 bg-[#fff2e8] text-[#f97316] hover:bg-[#fff2e8]",
+                  )}
                 >
                   <Link href={auth.login.url}>{auth.login.title}</Link>
                 </Button>
@@ -211,7 +239,9 @@ const Navbar = ({
                     collapsible
                     className="flex w-full flex-col gap-4"
                   >
-                    {menu.map((item) => renderMobileMenuItem(item))}
+                    {menu.map((item) =>
+                      renderMobileMenuItem(item, isActivePath(item.url)),
+                    )}
                   </Accordion>
 
                   <div className="flex flex-col gap-3">
@@ -220,7 +250,11 @@ const Navbar = ({
                         <Button
                           asChild
                           variant="outline"
-                          className="border-border/70 bg-transparent hover:bg-[#efe4d7]"
+                          className={cn(
+                            "border-border/70 bg-transparent hover:bg-[#efe4d7]",
+                            isActivePath("/orders") &&
+                              "border-[#f97316]/30 bg-[#fff2e8] text-[#f97316] hover:bg-[#fff2e8]",
+                          )}
                         >
                           <Link
                             href="/orders"
@@ -234,7 +268,11 @@ const Navbar = ({
                         <Button
                           asChild
                           variant="outline"
-                          className="border-border/70 bg-transparent hover:bg-[#efe4d7]"
+                          className={cn(
+                            "border-border/70 bg-transparent hover:bg-[#efe4d7]",
+                            isActivePath("/dashboard") &&
+                              "border-[#f97316]/30 bg-[#fff2e8] text-[#f97316] hover:bg-[#fff2e8]",
+                          )}
                         >
                           <Link href={dashboardUrl}>Dashboard</Link>
                         </Button>
@@ -252,7 +290,11 @@ const Navbar = ({
                         <Button
                           asChild
                           variant="outline"
-                          className="border-border/70 bg-transparent hover:bg-[#efe4d7]"
+                          className={cn(
+                            "border-border/70 bg-transparent hover:bg-[#efe4d7]",
+                            isActivePath(auth.login.url) &&
+                              "border-[#f97316]/30 bg-[#fff2e8] text-[#f97316] hover:bg-[#fff2e8]",
+                          )}
                         >
                           <Link href={auth.login.url}>{auth.login.title}</Link>
                         </Button>
@@ -278,7 +320,7 @@ const Navbar = ({
   );
 };
 
-const renderMenuItem = (item: MenuItem) => {
+const renderMenuItem = (item: MenuItem, isActive: boolean) => {
   if (item.items) {
     return (
       <NavigationMenuItem key={item.title}>
@@ -291,7 +333,10 @@ const renderMenuItem = (item: MenuItem) => {
     <NavigationMenuItem key={item.title}>
       <NavigationMenuLink
         asChild
-        className="group inline-flex h-10 w-max items-center justify-center rounded-md bg-transparent px-4 py-2 text-sm font-medium transition-colors hover:bg-[#efe4d7] hover:text-foreground"
+        className={cn(
+          "group inline-flex h-10 w-max items-center justify-center rounded-md bg-transparent px-4 py-2 text-sm font-medium transition-colors hover:bg-[#efe4d7] hover:text-foreground",
+          isActive && "bg-[#fff2e8] text-[#f97316]",
+        )}
       >
         <Link href={item.url}>{item.title}</Link>
       </NavigationMenuLink>
@@ -299,9 +344,18 @@ const renderMenuItem = (item: MenuItem) => {
   );
 };
 
-const renderMobileMenuItem = (item: MenuItem) => {
+const renderMobileMenuItem = (item: MenuItem, isActive: boolean) => {
   return (
-    <Link key={item.title} href={item.url} className="text-md font-semibold">
+    <Link
+      key={item.title}
+      href={item.url}
+      className={cn(
+        "text-md rounded-xl px-3 py-2 font-semibold transition-colors",
+        isActive
+          ? "bg-[#fff2e8] text-[#f97316]"
+          : "text-foreground hover:bg-[#efe4d7]",
+      )}
+    >
       {item.title}
     </Link>
   );

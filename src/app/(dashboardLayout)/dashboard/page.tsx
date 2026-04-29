@@ -1,10 +1,22 @@
-import { DashboardPageShell } from "@/components/shared/dashboard-page-shell";
+import {
+  DashboardProfile,
+  DashboardProfileError,
+} from "@/features/auth/components/dashboard-profile";
 
-export default function DashboardPage() {
-  return (
-    <DashboardPageShell
-      title="Dashboard"
-      description="Welcome to your FoodHub dashboard. Use the sidebar to move between customer, provider, or admin tools."
-    />
-  );
+
+import { getCurrentUser } from "@/lib/api/user";
+
+export default async function DashboardPage() {
+  try {
+    const user = await getCurrentUser();
+
+    return <DashboardProfile user={user} />;
+  } catch (error) {
+    const message =
+      error instanceof Error
+        ? error.message
+        : "We could not load your account details at the moment.";
+
+    return <DashboardProfileError message={message} />;
+  }
 }

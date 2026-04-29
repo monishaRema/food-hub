@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 import { useAuth } from "@/providers/AuthProvider";
 
@@ -16,6 +17,8 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
+import { UtensilsCrossed } from "lucide-react";
+import { cn } from "@/lib/utils/utils";
 
 type NavItem = {
   title: string;
@@ -58,6 +61,7 @@ function getNavByRole(role?: string): NavGroup[] {
     {
       title: "Customer",
       items: [
+        { title: "Dashboard", url: "/dashboard" },
         { title: "Become Provider", url: "/dashboard/become-provider" },
         { title: "My Orders", url: "/dashboard/my-orders" },
       ],
@@ -67,18 +71,31 @@ function getNavByRole(role?: string): NavGroup[] {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { user, isLoading } = useAuth();
+  const pathname = usePathname();
 
   const navMain = getNavByRole(user?.role);
+  const isActivePath = (href: string) =>
+    pathname === href || pathname.startsWith(`${href}/`);
 
   return (
     <Sidebar {...props}>
       <SidebarContent>
+         <div className="logo flex gap-5 p-5">
+              <span className="flex size-9 items-center justify-center rounded-xl bg-[#f97316] text-white shadow-sm">
+                <UtensilsCrossed className="size-4" />
+              </span>
+
+              <span className="text-2xl font-semibold tracking-tight">
+                FoodHub
+              </span>
+            </div>
         {isLoading ? (
           <SidebarGroup>
             <SidebarGroupLabel>Loading...</SidebarGroupLabel>
           </SidebarGroup>
         ) : (
           navMain.map((group) => (
+            
             <SidebarGroup key={group.title}>
               <SidebarGroupLabel>{group.title}</SidebarGroupLabel>
 
@@ -86,8 +103,19 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <SidebarMenu>
                   {group.items.map((item) => (
                     <SidebarMenuItem key={item.title}>
-                      <SidebarMenuButton asChild>
-                        <Link href={item.url}>{item.title}</Link>
+                      <SidebarMenuButton
+                        asChild
+                        isActive={isActivePath(item.url)}
+                      >
+                        <Link
+                          href={item.url}
+                          className={cn(
+                            isActivePath(item.url) &&
+                              "font-semibold text-[#f97316]",
+                          )}
+                        >
+                          {item.title}
+                        </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                   ))}
