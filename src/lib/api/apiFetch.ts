@@ -1,4 +1,5 @@
 import { env } from "@/env";
+import { ApiError, type ApiErrorDetails, UnauthorizedError } from "@/lib/api/errors";
 
 type HttpMethod = "GET" | "POST" | "PATCH" | "DELETE";
 
@@ -11,20 +12,26 @@ type ApiSuccessResponse<T> = {
 type ApiErrorResponse = {
   success: false;
   message: string;
-  errorDetails?: unknown;
+  errorDetails?: ApiErrorDetails[];
 };
 
 type ApiResponse<T> = ApiSuccessResponse<T> | ApiErrorResponse;
 
 async function parseJson<T>(response: Response): Promise<T> {
-  /**
-   * @params take a promise
-   * @return data in json as result
-   */
   const result = (await response.json()) as ApiResponse<T>;
 
   if (!response.ok || !result.success) {
-    throw new Error(result.message || `Request failed with ${response.status}`);
+    const errorDetails = !result.success ? result.errorDetails : undefined;
+
+    if (response.status === 401) {
+      throw new UnauthorizedError(result.message, errorDetails);
+    }
+
+    throw new ApiError(
+      result.message || `Request failed with ${response.status}`,
+      response.status,
+      errorDetails,
+    );
   }
 
   return result.data;
@@ -61,7 +68,7 @@ export async function apiFetch<T>(
     );
 
     if (!refreshResponse.ok) {
-      throw new Error("Session expired. Please login again.");
+      throw new UnauthorizedError();
     }
 
     response = await fetch(

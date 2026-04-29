@@ -118,14 +118,17 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
   });
 
   return (
-    <Card {...props}>
-      <CardHeader>
+    <Card
+      {...props}
+      className="overflow-hidden rounded-[32px] border border-[#eadfd2] bg-[#ffffff] shadow-sm max-w-2xl pt-0"
+    >
+      <CardHeader className="bg-amber-50 py-5">
         <CardTitle className="text-xl font-bold">Create an account</CardTitle>
         <CardDescription>
           Enter your information below to create your account
         </CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="pt-6">
         <form
           id="signup-form"
           onSubmit={(e) => {
@@ -264,7 +267,7 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
           </FieldGroup>
         </form>
       </CardContent>
-      <CardFooter className="flex flex-col gap-5">
+      <CardFooter className="flex flex-col items-stretch gap-3 border-t border-[#eadfd2] bg-amber-50">
         <Button form="signup-form" type="submit" className="w-full py-5">
           Signup
         </Button>

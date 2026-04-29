@@ -8,3 +8,7 @@ export const  UserStatus =  {
   ACTIVE : "ACTIVE", 
   SUSPENDED: "SUSPENDED"
 } as const
+
+export const DietaryType = ["VEG", "NON_VEG", "VEGAN"] as const;
+
+export const MealAvailability = ["AVAILABLE", "UNAVAILABLE"] as const;

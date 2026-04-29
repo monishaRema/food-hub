@@ -3,7 +3,7 @@ import {
   DashboardProfileError,
 } from "@/features/auth/components/dashboard-profile";
 
-
+import { redirectIfUnauthorized } from "@/lib/auth/redirect-if-unauthorized";
 import { getCurrentUser } from "@/lib/api/user";
 
 export default async function providerDashboardPage() {
@@ -12,6 +12,8 @@ export default async function providerDashboardPage() {
 
     return <DashboardProfile user={user} />;
   } catch (error) {
+    redirectIfUnauthorized(error, "/dashboard/provider");
+
     const message =
       error instanceof Error
         ? error.message

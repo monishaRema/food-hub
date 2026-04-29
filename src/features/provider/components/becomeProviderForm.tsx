@@ -1,6 +1,6 @@
 "use client";
 
-import { Store, MapPinHouse, ImageIcon } from "lucide-react";
+
 import { useRouter } from "next/navigation";
 
 import { useForm } from "@tanstack/react-form";
@@ -17,18 +17,18 @@ import {
 } from "@/components/ui/card";
 import {
   Field,
-  FieldDescription,
   FieldError,
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { registerProvider } from "@/features/provider/actions/register-provider";
+
 import {
   registerProviderSchema,
   type RegisterProviderValues,
 } from "@/features/provider/schemas/register-provider-schema";
 import { useAuth } from "@/providers/AuthProvider";
+import { registerProviderProfile } from "@/lib/api/provider";
 
 const defaultValues: RegisterProviderValues = {
   shopName: "",
@@ -51,7 +51,7 @@ export function BecomeProviderForm({
       const toastId = toast.loading("Submitting provider application");
 
       try {
-        await registerProvider({
+        await registerProviderProfile({
           shopName: value.shopName.trim(),
           address: value.address.trim(),
           ...(value.shopImage?.trim()
@@ -70,7 +70,7 @@ export function BecomeProviderForm({
             ? error.message
             : "Unable to register provider profile";
 
-        toast.error(message, { id: toastId });
+        toast.error(message, { id:  toastId});
       }
     },
   });
@@ -78,9 +78,9 @@ export function BecomeProviderForm({
   return (
     <Card
       {...props}
-      className="overflow-hidden rounded-[32px] border border-[#eadfd2] bg-[#f7f1e9] shadow-sm"
+      className="overflow-hidden rounded-[32px] border border-[#eadfd2] bg-[#ffffff] shadow-sm max-w-2xl pt-0"
     >
-      <CardHeader className="space-y-4 bg-[radial-gradient(circle_at_top_left,_rgba(249,115,22,0.16),_transparent_38%),linear-gradient(135deg,_rgba(255,255,255,0.72),_rgba(247,241,233,0.96))]">
+      <CardHeader className="bg-amber-50 py-5">
         <div className="space-y-2">
           <CardTitle className="text-2xl font-semibold tracking-tight text-stone-900">
             Become a provider
@@ -111,7 +111,6 @@ export function BecomeProviderForm({
                   <Field>
                     <FieldLabel htmlFor={field.name}>Shop name</FieldLabel>
                     <div className="relative">
-                      
                       <Input
                         id={field.name}
                         name={field.name}
@@ -159,7 +158,7 @@ export function BecomeProviderForm({
                         autoComplete="street-address"
                       />
                     </div>
-                 
+
                     {isInvalid ? (
                       <FieldError errors={field.state.meta.errors} />
                     ) : null}
@@ -204,7 +203,7 @@ export function BecomeProviderForm({
         </form>
       </CardContent>
 
-      <CardFooter className="flex flex-col items-stretch gap-3 border-t border-[#eadfd2] bg-white/70">
+      <CardFooter className="flex flex-col items-stretch gap-3 border-t border-[#eadfd2] bg-amber-50">
         <Button
           form="become-provider-form"
           type="submit"
@@ -212,7 +211,6 @@ export function BecomeProviderForm({
         >
           Submit request
         </Button>
-       
       </CardFooter>
     </Card>
   );

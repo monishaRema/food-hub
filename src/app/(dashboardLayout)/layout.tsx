@@ -7,10 +7,10 @@ export default function dashboardLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <div className="flex">
+    <div className="flex w-full">
       <SidebarProvider>
         <AppSidebar />
-        <main className="px-6 py-6">
+        <main className="w-full min-w-0 flex-1 px-6 py-6">
           <div className="mb-10">
           <div className="flex gap-2 items-center mb-2">
             <SidebarTrigger className="text-orange-600 " />

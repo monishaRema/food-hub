@@ -1,7 +1,9 @@
 import "server-only";
 
 import { cookies } from "next/headers";
+
 import { env } from "@/env";
+import { ApiError, type ApiErrorDetails, UnauthorizedError } from "@/lib/api/errors";
 
 type HttpMethod = "GET" | "POST" | "PATCH" | "DELETE";
 
@@ -14,7 +16,7 @@ type ApiSuccessResponse<T> = {
 type ApiErrorResponse = {
   success: false;
   message: string;
-  errorDetails?: unknown;
+  errorDetails?: ApiErrorDetails[];
 };
 
 type ApiResponse<T> = ApiSuccessResponse<T> | ApiErrorResponse;
@@ -31,7 +33,17 @@ async function parseJson<T>(response: Response): Promise<T> {
   const result = (await response.json()) as ApiResponse<T>;
 
   if (!response.ok || !result.success) {
-    throw new Error(result.message || `Request failed with ${response.status}`);
+    const errorDetails = !result.success ? result.errorDetails : undefined;
+
+    if (response.status === 401) {
+      throw new UnauthorizedError(result.message, errorDetails);
+    }
+
+    throw new ApiError(
+      result.message || `Request failed with ${response.status}`,
+      response.status,
+      errorDetails,
+    );
   }
 
   return result.data;
@@ -41,14 +53,7 @@ export async function apiFetchServer<T>(
   endpoint: string,
   options: ServerApiFetchOptions = {},
 ): Promise<T> {
-  const {
-    method = "GET",
-    data,
-    cache,
-    tags,
-    revalidate,
-  } = options;
-
+  const { method = "GET", data, cache, tags, revalidate } = options;
   const cookieStore = await cookies();
 
   const response = await fetch(`${env.API_URL}${endpoint}`, {
@@ -58,8 +63,6 @@ export async function apiFetchServer<T>(
       Cookie: cookieStore.toString(),
     },
     ...(data !== undefined ? { body: JSON.stringify(data) } : {}),
-
-    // Next.js caching
     ...(cache ? { cache } : {}),
     ...(tags || revalidate !== undefined
       ? {

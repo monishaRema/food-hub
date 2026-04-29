@@ -92,8 +92,11 @@ export function LoginForm({ ...props }: React.ComponentProps<typeof Card>) {
   });
 
   return (
-    <Card {...props}>
-      <CardHeader>
+    <Card
+      {...props}
+      className="overflow-hidden rounded-[32px] border border-[#eadfd2] bg-[#ffffff] shadow-sm max-w-2xl pt-0"
+    >
+      <CardHeader className="bg-amber-50 py-5">
         <CardTitle className="text-xl font-bold">
           Login to your account
         </CardTitle>
@@ -102,7 +105,7 @@ export function LoginForm({ ...props }: React.ComponentProps<typeof Card>) {
         </CardDescription>
       </CardHeader>
 
-      <CardContent>
+      <CardContent className="pt-6">
         <form
           id="login-form"
           onSubmit={(e) => {
@@ -168,7 +171,7 @@ export function LoginForm({ ...props }: React.ComponentProps<typeof Card>) {
         </form>
       </CardContent>
 
-      <CardFooter className="flex flex-col gap-5">
+      <CardFooter className="flex flex-col items-stretch gap-3 border-t border-[#eadfd2] bg-amber-50">
         <Button form="login-form" type="submit" className="w-full py-5">
           Login
         </Button>
