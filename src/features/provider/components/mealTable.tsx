@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 
@@ -41,7 +43,15 @@ function getDietaryVariant(dietary?: Meal["dietary"]) {
   return dietary === "VEGAN" ? "default" : "secondary";
 }
 
-export default function MealTable({ meals }: { meals: Meal[] }) {
+export default function MealTable({
+  meals,
+  deletingMealId,
+  onDeleteMeal,
+}: {
+  meals: Meal[];
+  deletingMealId?: string | null;
+  onDeleteMeal?: (meal: Meal) => void | Promise<void>;
+}) {
   return (
     <div className="overflow-hidden rounded-[28px] border border-[#eadfd2] bg-white shadow-sm">
       <div className="border-b border-[#f1e5d7] px-6 py-5">
@@ -137,8 +147,14 @@ export default function MealTable({ meals }: { meals: Meal[] }) {
                     <Button asChild variant="outline" size="sm">
                       <Link href={`/dashboard/providers/meals/${meal.id}/edit`}>Edit</Link>
                     </Button>
-                    <Button type="button"   className="bg-red-700 text-white" size="sm" >
-                      Delete
+                    <Button
+                      type="button"
+                      className="bg-red-700 text-white hover:bg-red-800"
+                      size="sm"
+                      disabled={!onDeleteMeal || deletingMealId === meal.id}
+                      onClick={() => void onDeleteMeal?.(meal)}
+                    >
+                      {deletingMealId === meal.id ? "Deleting..." : "Delete"}
                     </Button>
                   </div>
                 </TableCell>

@@ -1,10 +1,5 @@
-import { DashboardPageShell } from "@/components/shared/dashboard-page-shell";
+import { ProviderOrdersPageClient } from "@/features/provider/components/provider-orders-page-client";
 
 export default function ProviderOrdersPage() {
-  return (
-    <DashboardPageShell
-      title="Provider Orders"
-      description="Track customer orders for your meals and manage fulfillment status from this provider dashboard page."
-    />
-  );
+  return <ProviderOrdersPageClient />;
 }

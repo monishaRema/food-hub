@@ -96,7 +96,7 @@ export function CreateMealForm({
   return (
     <Card
       {...props}
-      className="overflow-hidden rounded-[32px] border border-[#eadfd2] bg-[#ffffff] shadow-sm max-w-3xl pt-0"
+      className="max-w-3xl overflow-hidden rounded-[32px] border border-[#eadfd2] bg-[#ffffff] pt-0 shadow-sm"
     >
       <CardHeader className="space-y-4 bg-amber-50 py-5">
         <div className="flex size-14 items-center justify-center rounded-2xl bg-[#f97316] text-white shadow-sm">

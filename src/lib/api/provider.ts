@@ -5,6 +5,11 @@ import type {
   Meal,
   MealAvailabilityValue,
 } from "@/types/meal";
+import type {
+  ProviderOrder,
+  ProviderOrdersListResult,
+  ProviderOrderStatusUpdate,
+} from "@/types/order";
 
 export type RegisterProviderPayload = {
   shopName: string;
@@ -32,12 +37,38 @@ export type CreateMealPayload = {
 
 export type UpdateMealPayload = CreateMealPayload;
 
+type ProviderOrdersQuery = {
+  page?: number;
+  limit?: number;
+};
+
+type ProviderOrdersApiShape =
+  | ProviderOrder[]
+  | {
+      data?: ProviderOrder[];
+      orders?: ProviderOrder[];
+      meta?: {
+        page?: number;
+        limit?: number;
+        total?: number;
+        totalPages?: number;
+      };
+      page?: number;
+      limit?: number;
+      total?: number;
+      totalPages?: number;
+    };
+
 export async function createProviderMeal(payload: CreateMealPayload) {
   return apiFetch<Meal>("/provider/meals", "POST", payload);
 }
 
 export async function updateProviderMeal(id: string, payload: UpdateMealPayload) {
   return apiFetch<Meal>(`/provider/meals/${id}`, "PATCH", payload);
+}
+
+export async function deleteProviderMeal(id: string) {
+  return apiFetch<void>(`/provider/meals/${id}`, "DELETE");
 }
 
 
@@ -47,4 +78,58 @@ export async function getMealByProvider(){
 
 export async function getProviderMealById(id: string) {
   return apiFetch<Meal>(`/provider/meals/${id}`);
+}
+
+function normalizeProviderOrdersResult(
+  payload: ProviderOrdersApiShape,
+  fallbackPage: number,
+  fallbackLimit: number,
+): ProviderOrdersListResult {
+  if (Array.isArray(payload)) {
+    return {
+      items: payload,
+      page: fallbackPage,
+      limit: fallbackLimit,
+    };
+  }
+
+  const items = Array.isArray(payload.data)
+    ? payload.data
+    : Array.isArray(payload.orders)
+      ? payload.orders
+      : [];
+
+  return {
+    items,
+    page: payload.meta?.page ?? payload.page ?? fallbackPage,
+    limit: payload.meta?.limit ?? payload.limit ?? fallbackLimit,
+    total: payload.meta?.total ?? payload.total,
+    totalPages: payload.meta?.totalPages ?? payload.totalPages,
+  };
+}
+
+export async function getProviderOrders(
+  query: ProviderOrdersQuery = {},
+): Promise<ProviderOrdersListResult> {
+  const page = query.page ?? 1;
+  const limit = query.limit ?? 10;
+  const searchParams = new URLSearchParams({
+    page: String(page),
+    limit: String(limit),
+  });
+
+  const response = await apiFetch<ProviderOrdersApiShape>(
+    `/provider/orders?${searchParams.toString()}`,
+  );
+
+  return normalizeProviderOrdersResult(response, page, limit);
+}
+
+export async function updateProviderOrderStatus(
+  id: string,
+  status: ProviderOrderStatusUpdate,
+) {
+  return apiFetch<ProviderOrder>(`/provider/orders/${id}/status`, "PATCH", {
+    status,
+  });
 }
