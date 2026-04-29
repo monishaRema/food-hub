@@ -41,6 +41,7 @@ function getNavByRole(role?: string): NavGroup[] {
           { title: "Categories", url: "/dashboard/admin/categories" },
           { title: "Orders", url: "/dashboard/admin/orders" },
           { title: "Providers", url: "/dashboard/admin/providers" },
+          {title:"Home",url:"/"}
         ],
       },
     ];
@@ -54,6 +55,7 @@ function getNavByRole(role?: string): NavGroup[] {
            { title: "Dashboard", url: "/dashboard/provider" },
           { title: "Meals", url: "/dashboard/providers/meals" },
           { title: "Orders", url: "/dashboard/providers/orders" },
+           {title:"Home",url:"/"}
         ],
       },
     ];
@@ -66,6 +68,7 @@ function getNavByRole(role?: string): NavGroup[] {
         { title: "Dashboard", url: "/dashboard" },
         { title: "Become Provider", url: "/dashboard/become-provider" },
         { title: "My Orders", url: "/dashboard/my-orders" },
+         {title:"Home",url:"/"}
       ],
     },
   ];
@@ -82,7 +85,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar {...props}>
       <SidebarContent>
-         <div className="logo flex gap-5 p-5">
+         <Link href="/" className="logo flex gap-5 p-5">
               <span className="flex size-9 items-center justify-center rounded-xl bg-[#f97316] text-white shadow-sm">
                 <UtensilsCrossed className="size-4" />
               </span>
@@ -90,7 +93,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               <span className="text-2xl font-semibold tracking-tight">
                 FoodHub
               </span>
-            </div>
+            </Link>
         {isLoading ? (
           <SidebarGroup>
             <SidebarGroupLabel>Loading...</SidebarGroupLabel>
