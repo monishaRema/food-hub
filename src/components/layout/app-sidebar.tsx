@@ -36,6 +36,7 @@ function getNavByRole(role?: string): NavGroup[] {
       {
         title: "Admin",
         items: [
+          { title: "Dashboard", url: "/dashboard/admin" },
           { title: "View Users", url: "/dashboard/admin/users" },
           { title: "Categories", url: "/dashboard/admin/categories" },
           { title: "Orders", url: "/dashboard/admin/orders" },
@@ -50,6 +51,7 @@ function getNavByRole(role?: string): NavGroup[] {
       {
         title: "Provider",
         items: [
+           { title: "Dashboard", url: "/dashboard/provider" },
           { title: "Meals", url: "/dashboard/providers/meals" },
           { title: "Orders", url: "/dashboard/providers/orders" },
         ],

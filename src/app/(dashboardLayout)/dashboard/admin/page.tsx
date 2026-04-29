@@ -1,10 +1,22 @@
-import { DashboardPageShell } from "@/components/shared/dashboard-page-shell";
+import {
+  DashboardProfile,
+  DashboardProfileError,
+} from "@/features/auth/components/dashboard-profile";
 
-export default function AdminPage() {
-  return (
-    <DashboardPageShell
-      title="Admin Dashboard"
-      description="This is the admin overview page for managing users, categories, providers, and platform activity."
-    />
-  );
+
+import { getCurrentUser } from "@/lib/api/user";
+
+export default async function adminDashboardPage() {
+  try {
+    const user = await getCurrentUser();
+
+    return <DashboardProfile user={user} />;
+  } catch (error) {
+    const message =
+      error instanceof Error
+        ? error.message
+        : "We could not load your account details at the moment.";
+
+    return <DashboardProfileError message={message} />;
+  }
 }
