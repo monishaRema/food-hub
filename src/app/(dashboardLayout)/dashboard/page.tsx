@@ -1,24 +1,5 @@
-import {
-  DashboardProfile,
-  DashboardProfileError,
-} from "@/features/auth/components/dashboard-profile";
+import { DashboardProfileClient } from "@/features/auth/components/dashboard-profile-client";
 
-import { redirectIfUnauthorized } from "@/lib/auth/redirect-if-unauthorized";
-import { getCurrentUser } from "@/lib/api/user";
-
-export default async function DashboardPage() {
-  try {
-    const user = await getCurrentUser();
-
-    return <DashboardProfile user={user} />;
-  } catch (error) {
-    redirectIfUnauthorized(error, "/dashboard");
-
-    const message =
-      error instanceof Error
-        ? error.message
-        : "We could not load your account details at the moment.";
-
-    return <DashboardProfileError message={message} />;
-  }
+export default function DashboardPage() {
+  return <DashboardProfileClient nextPath="/dashboard" />;
 }

@@ -30,11 +30,21 @@ export type CreateMealPayload = {
   availability?: MealAvailabilityValue;
 };
 
+export type UpdateMealPayload = CreateMealPayload;
+
 export async function createProviderMeal(payload: CreateMealPayload) {
   return apiFetch<Meal>("/provider/meals", "POST", payload);
+}
+
+export async function updateProviderMeal(id: string, payload: UpdateMealPayload) {
+  return apiFetch<Meal>(`/provider/meals/${id}`, "PATCH", payload);
 }
 
 
 export async function getMealByProvider(){
    return apiFetch<Meal[]>("/provider/meals");
+}
+
+export async function getProviderMealById(id: string) {
+  return apiFetch<Meal>(`/provider/meals/${id}`);
 }

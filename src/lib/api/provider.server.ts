@@ -8,3 +8,9 @@ export async function getProviderMeals() {
     cache: "no-store",
   });
 }
+
+export async function getProviderMealById(id: string) {
+  return apiFetchServer<Meal>(`/provider/meals/${id}`, {
+    cache: "no-store",
+  });
+}

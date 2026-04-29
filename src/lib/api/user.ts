@@ -1,9 +1,6 @@
-import { apiFetchServer } from "@/lib/api/apiFetchServer";
-
+import { apiFetch } from "@/lib/api/apiFetch";
 import type { AuthUser } from "@/types/user";
 
 export async function getCurrentUser() {
-  return apiFetchServer<AuthUser>("/auth/me", {
-    cache: "no-store",
-  });
+  return apiFetch<AuthUser>("/auth/me");
 }

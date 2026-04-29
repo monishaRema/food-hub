@@ -1,8 +1,6 @@
-import { apiFetchServer } from "@/lib/api/apiFetchServer";
+import { apiFetch } from "@/lib/api/apiFetch";
 import type { Category } from "@/types/category";
 
-export async function getCategories() {
-  return apiFetchServer<Category[]>("/admin/category", {
-    tags: ["categories"],
-  });
+export async function getCategoriesClient() {
+  return apiFetch<Category[]>("/admin/category");
 }

@@ -1,4 +1,8 @@
+import Image from "next/image";
+import Link from "next/link";
+
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -7,59 +11,136 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { BlogPost } from "@/types";
+import { formatEnumLabel } from "@/lib/utils/format";
+import type { Meal } from "@/types/meal";
 
-export default function MealTable({ meals }: { meals: any }) {
+function formatPrice(price?: string | number) {
+  if (price === undefined || price === null || price === "") {
+    return "Not available";
+  }
+
+  const numericPrice =
+    typeof price === "number" ? price : Number.parseFloat(price);
+
+  if (Number.isNaN(numericPrice)) {
+    return String(price);
+  }
+
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 2,
+  }).format(numericPrice);
+}
+
+function getAvailabilityVariant(availability?: Meal["availability"]) {
+  return availability === "AVAILABLE" ? "default" : "outline";
+}
+
+function getDietaryVariant(dietary?: Meal["dietary"]) {
+  return dietary === "VEGAN" ? "default" : "secondary";
+}
+
+export default function MealTable({ meals }: { meals: Meal[] }) {
   return (
-    <div className="border rounded-md">
+    <div className="overflow-hidden rounded-[28px] border border-[#eadfd2] bg-white shadow-sm">
+      <div className="border-b border-[#f1e5d7] px-6 py-5">
+        <h2 className="text-xl font-semibold text-stone-900">Your meals</h2>
+        <p className="mt-1 text-sm text-stone-600">
+          Review the meals currently available on your provider menu.
+        </p>
+      </div>
+
       <Table>
         <TableHeader>
-          <TableRow>
-            <TableHead>Title</TableHead>
-            <TableHead>Tags</TableHead>
-            <TableHead className="text-right">Views</TableHead>
-            <TableHead className="text-right">Comments</TableHead>
+          <TableRow className="border-[#f1e5d7] bg-stone-50/80 hover:bg-stone-50/80">
+            <TableHead className="px-6 py-4">Meal</TableHead>
+            <TableHead>Category</TableHead>
+            <TableHead>Dietary</TableHead>
+            <TableHead>Availability</TableHead>
+            <TableHead>Featured</TableHead>
+            <TableHead className="text-right">Price</TableHead>
+            <TableHead className="px-6">Actions</TableHead>
           </TableRow>
         </TableHeader>
+
         <TableBody>
-          {posts.length === 0 ? (
+          {meals.length === 0 ? (
             <TableRow>
               <TableCell
-                colSpan={5}
-                className="text-center py-8 text-muted-foreground"
+                colSpan={7}
+                className="px-6 py-10 text-center text-sm text-stone-500"
               >
-                No blog posts found
+                No meals found for this provider yet.
               </TableCell>
             </TableRow>
           ) : (
-            posts.map((post) => (
-              <TableRow key={post.id}>
-                <TableCell>
-                  <div className="max-w-[400px]">
-                    <p className="font-medium">{post.title}</p>
-                    <p className="text-sm text-muted-foreground line-clamp-1">
-                      {post.content}
-                    </p>
+            meals.map((meal) => (
+              <TableRow key={meal.id} className="border-[#f7ede2] hover:bg-[#fffaf5]">
+                <TableCell className="px-6 py-4">
+                  <div className="flex min-w-[280px] items-center gap-4">
+                    <div className="relative h-14 w-14 overflow-hidden rounded-2xl bg-stone-100">
+                      {meal.image ? (
+                        <Image
+                          src={meal.image}
+                          alt={meal.name ?? "Meal image"}
+                          fill
+                          sizes="56px"
+                          className="object-cover"
+                        />
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center text-xs text-stone-400">
+                          No image
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="min-w-0">
+                      <p className="font-medium text-stone-900">
+                        {meal.name ?? "Untitled meal"}
+                      </p>
+                    </div>
                   </div>
                 </TableCell>
-                <TableCell>
-                  <div className="flex flex-wrap gap-1">
-                    {post.tags && post.tags.length > 0 ? (
-                      post.tags.map((tag, index) => (
-                        <Badge key={index} variant="secondary">
-                          {tag}
-                        </Badge>
-                      ))
-                    ) : (
-                      <span className="text-sm text-muted-foreground">
-                        No tags
-                      </span>
-                    )}
-                  </div>
+
+                <TableCell className="text-stone-600">
+                  {meal.category?.name ?? meal.categoryId ?? "Not set"}
                 </TableCell>
-                <TableCell className="text-right">{post.views}</TableCell>
-                <TableCell className="text-right">
-                  {post._count?.comments ?? 0}
+
+                <TableCell>
+                  <Badge variant={getDietaryVariant(meal.dietary)}>
+                    {formatEnumLabel(meal.dietary)}
+                  </Badge>
+                </TableCell>
+
+                <TableCell>
+                  <Badge variant={getAvailabilityVariant(meal.availability)}>
+                    {formatEnumLabel(meal.availability)}
+                  </Badge>
+                </TableCell>
+
+                <TableCell>
+                  <Badge variant={meal.isFeatured ? "default" : "outline"}>
+                    {meal.isFeatured ? "Featured" : "Standard"}
+                  </Badge>
+                </TableCell>
+
+                <TableCell className="text-right font-medium text-stone-900">
+                  {formatPrice(meal.price)}
+                </TableCell>
+
+                <TableCell className="px-6">
+                  <div className="flex flex-wrap justify-end gap-2">
+                    <Button asChild variant="outline" size="sm">
+                      <Link href={`/dashboard/providers/meals/${meal.id}`}>View</Link>
+                    </Button>
+                    <Button asChild variant="outline" size="sm">
+                      <Link href={`/dashboard/providers/meals/${meal.id}/edit`}>Edit</Link>
+                    </Button>
+                    <Button type="button"   className="bg-red-700 text-white" size="sm" >
+                      Delete
+                    </Button>
+                  </div>
                 </TableCell>
               </TableRow>
             ))

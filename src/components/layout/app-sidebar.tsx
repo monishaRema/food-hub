@@ -54,6 +54,7 @@ function getNavByRole(role?: string): NavGroup[] {
         items: [
            { title: "Dashboard", url: "/dashboard/provider" },
           { title: "Meals", url: "/dashboard/providers/meals" },
+          { title: "Create Meal", url: "/dashboard/providers/create-meals" },
           { title: "Orders", url: "/dashboard/providers/orders" },
            {title:"Home",url:"/"}
         ],

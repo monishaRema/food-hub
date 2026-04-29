@@ -5,14 +5,20 @@ export type DietaryTypeValue = (typeof DietaryType)[number];
 export type MealAvailabilityValue = (typeof MealAvailability)[number];
 
 export type Meal = {
-  id?: string;
+  id: string;
+  providerId?: string;
   name?: string;
   image?: string;
-  price?: number;
+  price?: string | number;
   dietary?: DietaryTypeValue;
   excerpt?: string;
   details?: string;
+  category?: {
+    name?: string;
+  };
   categoryId?: string;
   isFeatured?: boolean;
   availability?: MealAvailabilityValue;
-} & Record<string, unknown>;
+  createdAt?: string;
+  updatedAt?: string;
+};
