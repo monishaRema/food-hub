@@ -8,7 +8,10 @@ import { Badge } from "@/components/ui/badge";
 import { MealList } from "@/features/meals/components/MealList";
 import { isApiError } from "@/lib/api/errors";
 import { mealPageQuerySchema } from "@/lib/schema";
-import { getMealsByProvider, getSingleProvider } from "@/lib/api/publicProvider";
+import {
+  getMealsByProvider,
+  getSingleProvider,
+} from "@/lib/api/publicProvider";
 import type { ParamsIdType, SearchParamsType } from "@/types";
 
 type ProviderSinglePageProps = ParamsIdType & SearchParamsType;
@@ -22,8 +25,11 @@ export default async function ProviderSinglePage({
   const query = mealPageQuerySchema.parse(rawSearchParams);
 
   try {
-    const provider = await getSingleProvider(id);
-    const meals = await getMealsByProvider(provider.id, query);
+    const [provider, meals] = await Promise.all([
+      getSingleProvider(id),
+      getMealsByProvider(id, query),
+    ]);
+
     const mealItems = meals.data ?? [];
 
     return (
