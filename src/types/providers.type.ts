@@ -16,12 +16,6 @@ export interface GetProvidersParams {
   search?: string;
 }
 
-export type ProviderData = {
-  id: string;
+export interface ProviderData extends Omit<Provider, "userId"> {
   userId?: string;
-  shopName: string;
-  address: string;
-  shopImage?: string;
-  createdAt?: string;
-  updatedAt?: string;
-};
+}

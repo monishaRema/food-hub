@@ -16,9 +16,10 @@ import Link from "next/link";
 
 interface CardImageProps {
   meal: FeaturedMeal | Meal;
+  mode?: "default" | "provider";
 }
 
-export function CardImage({ meal }: CardImageProps) {
+export function CardImage({ meal, mode = "default" }: CardImageProps) {
   const dietaryStyles = {
     VEG: "bg-green-100 text-green-700 border-green-300",
     NON_VEG: "bg-red-100 text-red-700 border-red-300",
@@ -26,7 +27,7 @@ export function CardImage({ meal }: CardImageProps) {
   } as const;
 
   return (
-    <Card className="relative mx-auto w-full max-w-sm pt-0">
+    <Card className="relative mx-auto w-full max-w-sm overflow-hidden pt-0">
       <CardAction className="absolute top-2 left-2 z-21">
         {meal.isFeatured ? (
           <Badge variant="secondary" className="bg-amber-500 text-white">
@@ -43,26 +44,35 @@ export function CardImage({ meal }: CardImageProps) {
       )}
 
       <div className="absolute inset-0 z-30 aspect-video bg-black/15" />
-      {meal.image ? (
-        <Image
-          src={meal.image}
-          alt={meal.name}
-          width={300}
-          height={250}
-          className="relative z-20 aspect-video w-full object-cover"
-        />
-      ) : (
-        <div className="relative z-20 flex aspect-video w-full items-center justify-center bg-stone-200 text-sm text-stone-600">
-          No image available
-        </div>
-      )}
+      <Link href={`/meals/${meal.id}`} className="block">
+        {meal.image ? (
+          <Image
+            src={meal.image}
+            alt={meal.name}
+            width={300}
+            height={250}
+            className="relative z-20 aspect-video w-full object-cover transition duration-300 hover:scale-[1.02]"
+          />
+        ) : (
+          <div className="relative z-20 flex aspect-video w-full items-center justify-center bg-stone-200 text-sm text-stone-600">
+            No image available
+          </div>
+        )}
+      </Link>
       <CardHeader>
         <CardAction>
           <Badge variant="secondary" className="bg-slate-800 text-white">
             {meal.category?.name}
           </Badge>
         </CardAction>
-        <CardTitle className="text-xl font-bold">{meal.name}</CardTitle>
+        <CardTitle className="text-xl font-bold">
+          <Link
+            href={`/meals/${meal.id}`}
+            className="transition hover:text-[#ff8b2b]"
+          >
+            {meal.name}
+          </Link>
+        </CardTitle>
         <CardDescription>
           {meal.excerpt ?? `${meal.category?.name ?? "Meal"} by FoodHub`}
         </CardDescription>
@@ -71,9 +81,15 @@ export function CardImage({ meal }: CardImageProps) {
         </p>
       </CardHeader>
       <CardFooter>
-        <Link href={`/meals/${meal.id}`} className="w-full">
-          <Button className="w-full h-10 text-md font-bold">View Meal</Button>
-        </Link>
+        {mode === "provider" ? (
+          <Button className="h-10 w-full text-md font-bold">Add to cart</Button>
+        ) : (
+          <Link href={`/meals/${meal.id}`} className="w-full">
+            <Button className="h-10 w-full text-md font-bold">
+              View Meal
+            </Button>
+          </Link>
+        )}
       </CardFooter>
     </Card>
   );

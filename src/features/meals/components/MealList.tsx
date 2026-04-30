@@ -3,14 +3,15 @@ import { CardImage } from "./MealCard";
 
 interface MealListProps {
   meals: Meal[];
+  mode?: "default" | "provider";
 }
 
-export function MealList({ meals }: MealListProps) {
+export function MealList({ meals, mode = "default" }: MealListProps) {
   if (meals.length !== 0) {
     return (
       <div className="mt-6 grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
         {meals.map((meal) => (
-          <CardImage key={meal.id} meal={meal} />
+          <CardImage key={meal.id} meal={meal} mode={mode} />
         ))}
       </div>
     );
