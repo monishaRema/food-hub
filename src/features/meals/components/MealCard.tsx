@@ -8,6 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import { formatPrice } from "@/lib/utils/format"
 import type { FeaturedMeal, Meal } from "@/types/meal"
 import Image from "next/image"
 import Link from "next/link"
@@ -16,13 +17,7 @@ interface CardImageProps {
   meal: FeaturedMeal | Meal;
 }
 
-function formatPrice(price: number) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    maximumFractionDigits: 2,
-  }).format(price)
-}
+
 
 export function CardImage({ meal }: CardImageProps) {
   return (

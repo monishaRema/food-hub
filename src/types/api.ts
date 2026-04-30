@@ -3,16 +3,26 @@ export interface ApiErrorDetail {
   message: string;
 }
 
-export interface ApiSuccessResponse<T> {
-  success: true;
-  message: string;
-  data: T;
+export interface Meta {
+  page: number;
+  limit: number;
+  totalItems: number;
+  totalPage: number;
 }
 
-export interface ApiErrorResponse {
-  success: false;
+export interface ApiResponse<T> {
+  res: Response;
+  statusCode: number;
   message: string;
+  data?: T;
+  meta?: Meta;
   errorDetails?: ApiErrorDetail[];
 }
 
-export type ApiResponse<T> = ApiSuccessResponse<T> | ApiErrorResponse;
+export type ApiFetchResult<T> = {
+  res: Response;
+  statusCode: number;
+  message: string;
+  data?: T;
+  meta?: Meta;
+};

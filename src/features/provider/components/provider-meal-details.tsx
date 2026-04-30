@@ -11,27 +11,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { formatEnumLabel } from "@/lib/utils/format";
+import { formatEnumLabel, formatPrice } from "@/lib/utils/format";
 import type { Meal } from "@/types/meal";
-
-function formatPrice(price?: string | number) {
-  if (price === undefined || price === null || price === "") {
-    return "Not available";
-  }
-
-  const numericPrice =
-    typeof price === "number" ? price : Number.parseFloat(price);
-
-  if (Number.isNaN(numericPrice)) {
-    return String(price);
-  }
-
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    maximumFractionDigits: 2,
-  }).format(numericPrice);
-}
 
 function DetailItem({ label, value }: { label: string; value: string }) {
   return (

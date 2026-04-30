@@ -1,9 +1,9 @@
 
 import { apiFetch } from "@/lib/api/apiFetch";
 import type {
-  DietaryTypeValue,
+  DietaryType,
   Meal,
-  MealAvailabilityValue,
+  MealAvailability,
 } from "@/types/meal";
 import type {
   ProviderOrder,
@@ -27,12 +27,12 @@ export type CreateMealPayload = {
   name: string;
   image: string;
   price: number;
-  dietary: DietaryTypeValue;
+  dietary: DietaryType;
   excerpt: string;
   details: string;
   categoryId: string;
   isFeatured?: boolean;
-  availability?: MealAvailabilityValue;
+  availability?: MealAvailability;
 };
 
 export type UpdateMealPayload = CreateMealPayload;

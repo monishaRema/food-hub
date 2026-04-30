@@ -4,7 +4,7 @@ import { headers } from "next/headers";
 
 import { ApiError, UnauthorizedError } from "@/lib/api/errors";
 import type { ApiFetchOptions, ApiSearchParamValue } from "@/lib/api/types";
-import type { ApiErrorResponse, ApiResponse } from "@/types/api";
+import type { ApiResponse } from "@/types/api";
 
 function getApiBaseUrl() {
   const apiBaseUrl =
@@ -61,24 +61,22 @@ async function parseResponse<T>(response: Response): Promise<T> {
     throw new ApiError("The server returned an empty response.", response.status);
   }
 
-  if (!response.ok || !payload.success) {
-    const errorPayload = payload as ApiErrorResponse;
-
+  if (!response.ok) {
     if (response.status === 401) {
       throw new UnauthorizedError(
-        errorPayload.message || "You need to sign in to continue.",
-        errorPayload.errorDetails ?? [],
+        payload.message || "You need to sign in to continue.",
+        payload.errorDetails ?? [],
       );
     }
 
     throw new ApiError(
-      errorPayload.message || `Request failed with status ${response.status}.`,
+      payload.message || `Request failed with status ${response.status}.`,
       response.status,
-      errorPayload.errorDetails ?? [],
+      payload.errorDetails ?? [],
     );
   }
 
-  return payload.data;
+  return payload.data as T;
 }
 
 export async function apiFetch<T>(

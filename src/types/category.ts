@@ -1,4 +1,4 @@
-export type Category = {
+export interface Category {
   id: string;
   name: string;
-} & Record<string, unknown>;
+}

@@ -3,37 +3,29 @@ import "server-only";
 import { cookies } from "next/headers";
 
 import { env } from "@/env";
-import { ApiError, type ApiErrorDetails, UnauthorizedError } from "@/lib/api/errors";
-
-type HttpMethod = "GET" | "POST" | "PATCH" | "DELETE";
-
-type ApiSuccessResponse<T> = {
-  success: true;
-  message: string;
-  data: T;
-};
-
-type ApiErrorResponse = {
-  success: false;
-  message: string;
-  errorDetails?: ApiErrorDetails[];
-};
-
-type ApiResponse<T> = ApiSuccessResponse<T> | ApiErrorResponse;
+import {
+  ApiError,
+  type ApiErrorDetails,
+  UnauthorizedError,
+} from "@/lib/api/errors";
+import type { ApiFetchMethod } from "@/lib/api/types";
+import type { ApiFetchResult, ApiResponse } from "@/types/api";
 
 type ServerApiFetchOptions = {
-  method?: HttpMethod;
+  method?: ApiFetchMethod;
   data?: unknown;
   cache?: RequestCache;
   tags?: string[];
   revalidate?: number | false;
 };
 
-async function parseJson<T>(response: Response): Promise<T> {
-  const result = (await response.json()) as ApiResponse<T>;
 
-  if (!response.ok || !result.success) {
-    const errorDetails = !result.success ? result.errorDetails : undefined;
+
+async function parseJson<T>(response: Response): Promise<ApiFetchResult<T>> {
+  const result = (await response.json()) as Omit<ApiResponse<T>, "res">;
+
+  if (!response.ok) {
+    const errorDetails = result.errorDetails as ApiErrorDetails[] | undefined;
 
     if (response.status === 401) {
       throw new UnauthorizedError(result.message, errorDetails);
@@ -46,13 +38,19 @@ async function parseJson<T>(response: Response): Promise<T> {
     );
   }
 
-  return result.data;
+  return {
+    res: response,
+    statusCode: result.statusCode ?? response.status,
+    message: result.message,
+    data: result.data,
+    meta: result.meta,
+  };
 }
 
 export async function apiFetchServer<T>(
   endpoint: string,
   options: ServerApiFetchOptions = {},
-): Promise<T> {
+): Promise<ApiFetchResult<T>> {
   const { method = "GET", data, cache, tags, revalidate } = options;
   const cookieStore = await cookies();
 

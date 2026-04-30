@@ -1,10 +1,10 @@
 import { UserRole, UserStatus } from "@/constants";
 
-export type UserRoleType = (typeof UserRole)[keyof typeof UserRole]
+export type UserRoleType = (typeof UserRole)[keyof typeof UserRole];
 
 export type UserStatusType = (typeof UserStatus)[keyof typeof UserStatus];
 
-export type AuthUser = {
+export interface AuthUser {
   id: string;
   name: string;
   email: string;
@@ -14,4 +14,4 @@ export type AuthUser = {
   image?: string | null;
   createdAt?: string;
   updatedAt?: string;
-};
+}

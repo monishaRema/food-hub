@@ -13,31 +13,17 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ProviderOrderStatusFlow } from "@/constants";
-import { formatDateTime, formatDisplayValue, formatEnumLabel } from "@/lib/utils/format";
+import {
+  formatCurrency,
+  formatDateTime,
+  formatDisplayValue,
+  formatEnumLabel,
+} from "@/lib/utils/format";
 import type {
   ProviderOrder,
   ProviderOrderStatus,
   ProviderOrderStatusUpdate,
 } from "@/types/order";
-
-function formatAmount(value?: string | number) {
-  if (value === undefined || value === null || value === "") {
-    return "Not available";
-  }
-
-  const parsedValue =
-    typeof value === "number" ? value : Number.parseFloat(value);
-
-  if (Number.isNaN(parsedValue)) {
-    return String(value);
-  }
-
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    maximumFractionDigits: 2,
-  }).format(parsedValue);
-}
 
 function getStatusVariant(status?: ProviderOrderStatus) {
   if (status === "DELIVERED") {
@@ -186,7 +172,7 @@ export function ProviderOrdersTable({
                   </TableCell>
 
                   <TableCell className="text-right font-medium text-stone-900">
-                    {formatAmount(order.totalAmount ?? order.totalPrice)}
+                    {formatCurrency(order.totalAmount ?? order.totalPrice)}
                   </TableCell>
 
                   <TableCell>
