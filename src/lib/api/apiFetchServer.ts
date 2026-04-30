@@ -39,9 +39,6 @@ async function parseJson<T>(response: Response): Promise<ApiFetchResult<T>> {
   }
 
   return {
-    res: response,
-    statusCode: result.statusCode ?? response.status,
-    message: result.message,
     data: result.data,
     meta: result.meta,
   };
@@ -71,6 +68,7 @@ export async function apiFetchServer<T>(
         }
       : {}),
   });
+
 
   return parseJson<T>(response);
 }

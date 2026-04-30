@@ -1,10 +1,9 @@
-export const dietaryTypes = ["VEG", "NON_VEG", "VEGAN"] as const;
+import { DietaryType, MealAvailability } from "@/constants";
 
-export const mealAvailabilityValues = ["AVAILABLE", "UNAVAILABLE"] as const;
 
-export type DietaryType = (typeof dietaryTypes)[number];
+export type DietaryType = (typeof DietaryType)[keyof typeof DietaryType];
 
-export type MealAvailability = (typeof mealAvailabilityValues)[number];
+export type MealAvailability = (typeof MealAvailability)[keyof typeof MealAvailability];
 
 export interface MealCategory {
   id?: string;

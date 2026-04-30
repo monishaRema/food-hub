@@ -1,5 +1,5 @@
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardAction,
@@ -7,22 +7,42 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import { formatPrice } from "@/lib/utils/format"
-import type { FeaturedMeal, Meal } from "@/types/meal"
-import Image from "next/image"
-import Link from "next/link"
+} from "@/components/ui/card";
+import { DietaryType } from "@/constants";
+import { formatPrice } from "@/lib/utils/format";
+import type { FeaturedMeal, Meal } from "@/types/meal";
+import Image from "next/image";
+import Link from "next/link";
 
 interface CardImageProps {
   meal: FeaturedMeal | Meal;
 }
 
-
-
 export function CardImage({ meal }: CardImageProps) {
+  const dietaryStyles = {
+    VEG: "bg-green-100 text-green-700 border-green-300",
+    NON_VEG: "bg-red-100 text-red-700 border-red-300",
+    VEGAN: "bg-emerald-100 text-emerald-700 border-emerald-300",
+  } as const;
+
   return (
     <Card className="relative mx-auto w-full max-w-sm pt-0">
-      <div className="absolute inset-0 z-30 aspect-video bg-black/35" />
+      <CardAction className="absolute top-2 left-2 z-21">
+        {meal.isFeatured ? (
+          <Badge variant="secondary" className="bg-amber-500 text-white">
+            Featured
+          </Badge>
+        ) : null}
+      </CardAction>
+      {meal.dietary && (
+        <CardAction className="absolute top-2 right-2 z-21">
+          <Badge variant="secondary" className={dietaryStyles[meal.dietary]}>
+            {meal.dietary}
+          </Badge>
+        </CardAction>
+      )}
+
+      <div className="absolute inset-0 z-30 aspect-video bg-black/15" />
       {meal.image ? (
         <Image
           src={meal.image}
@@ -38,9 +58,11 @@ export function CardImage({ meal }: CardImageProps) {
       )}
       <CardHeader>
         <CardAction>
-          {meal.isFeatured ? <Badge variant="secondary" className="bg-amber-500 text-white">Featured</Badge> : null}
+          <Badge variant="secondary" className="bg-slate-800 text-white">
+            {meal.category?.name}
+          </Badge>
         </CardAction>
-        <CardTitle>{meal.name}</CardTitle>
+        <CardTitle className="text-xl font-bold">{meal.name}</CardTitle>
         <CardDescription>
           {meal.excerpt ?? `${meal.category?.name ?? "Meal"} by FoodHub`}
         </CardDescription>
@@ -50,9 +72,9 @@ export function CardImage({ meal }: CardImageProps) {
       </CardHeader>
       <CardFooter>
         <Link href={`/meals/${meal.id}`} className="w-full">
-          <Button className="w-full h-10 text-md font-bold" >View Meal</Button>
+          <Button className="w-full h-10 text-md font-bold">View Meal</Button>
         </Link>
       </CardFooter>
     </Card>
-  )
+  );
 }

@@ -9,58 +9,21 @@ import {
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "../ui/button";
+import { Meta } from "@/types/api";
 
-interface PaginationControlsProps {
-  meta: {
-    limit: number;
-    page: number;
-    totalItems: number;
-    totalPage: number;
-  };
-}
-
-export default function PaginationControls({ meta }: PaginationControlsProps) {
-  const {
-    limit: pageSize,
-    page: currentPage,
-    totalItems,
-    totalPage,
-  } = meta;
+export default function PaginationControls({ meta }: { meta: Meta }) {
+  const { limit: pageSize, page: currentPage, totalItems, totalPage } = meta;
 
   const searchParams = useSearchParams();
   const router = useRouter();
 
-
-
   const navigateToPage = (page: number) => {
     const params = new URLSearchParams(searchParams.toString());
-  
 
     params.set("page", page.toString());
-  
-
 
     router.push(`?${params.toString()}`);
-
-    // router.push("/dashboard/create-blogs"); // Example
-
-   
   };
-
-
-  /**
-   *  await getPost(); time: 3
-   *  await getUser(); time: 4
-   *  console.log(hello) 
-   *  const post = getPost();
-   *  const user = getUser();
-   * 
-   * [post, user] = await promise.all(post, user)  
-   * 
-   */
-
-  //* Showing 1 to 10 of 21 -> page 1
-  //* Showing 11 to 20 of 21 -> page 2
 
   const start = (currentPage - 1) * pageSize + 1;
   const end = Math.min(currentPage * pageSize, totalItems);

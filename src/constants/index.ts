@@ -9,9 +9,11 @@ export const  UserStatus =  {
   SUSPENDED: "SUSPENDED"
 } as const
 
-export const DietaryType = ["VEG", "NON_VEG", "VEGAN"] as const;
 
-export const MealAvailability = ["AVAILABLE", "UNAVAILABLE"] as const;
+
+export const DietaryType = {VEG:"VEG", NON_VEG: "NON_VEG", VEGAN: "VEGAN"} as const;
+
+export const MealAvailability = {AVAILABLE: "AVAILABLE", UNAVAILABLE:  "UNAVAILABLE"} as const;
 
 export const ProviderOrderStatusFlow = {
   PENDING: "CONFIRMED",

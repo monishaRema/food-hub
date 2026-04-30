@@ -1,5 +1,5 @@
 import { apiFetchServer } from "@/lib/api/apiFetchServer";
-import { ApiError } from "@/lib/api/errors";
+import type { ApiFetchResult, PaginatedPayload } from "@/types/api";
 import type { FeaturedMeal, GetMealsParams, Meal, SingleMeal } from "@/types/meal";
 
 export async function getMeals(params: GetMealsParams = {}) {
@@ -22,7 +22,7 @@ export async function getMeals(params: GetMealsParams = {}) {
 
   const query = searchParams.toString();
 
-  const meals = await apiFetchServer<Meal[]>(
+  const response = await apiFetchServer<PaginatedPayload<Meal[]>>(
     `/meals${query ? `?${query}` : ""}`,
     {
       revalidate: 60,
@@ -30,7 +30,10 @@ export async function getMeals(params: GetMealsParams = {}) {
     }
   );
 
-  return meals;
+  return {
+    data: response.data?.data ?? [],
+    meta: response.data?.meta ?? response.meta,
+  } satisfies ApiFetchResult<Meal[]>;
 }
 
 export async function getFeaturedMeal(params?: Record<string, string>) {
@@ -49,7 +52,7 @@ export async function getSingleMeal(id: string) {
   });
 
   if (!response.data) {
-    throw new ApiError(response.message || "Meal not found.", response.statusCode);
+    throw new Error("Meal not found.");
   }
 
   return response.data;

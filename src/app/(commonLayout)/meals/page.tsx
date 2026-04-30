@@ -10,7 +10,6 @@ export default async function MealPage({ searchParams }: SearchParamsType) {
   const query = mealPageQuerySchema.parse(rawSearchParams);
   const meals = await getMeals(query);
   const mealItems = meals.data ?? [];
-
   return (
     <main>
       <MealsHero />

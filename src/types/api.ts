@@ -20,9 +20,11 @@ export interface ApiResponse<T> {
 }
 
 export type ApiFetchResult<T> = {
-  res: Response;
-  statusCode: number;
-  message: string;
   data?: T;
   meta?: Meta;
 };
+
+export interface PaginatedPayload<T> {
+  data: T;
+  meta: Meta;
+}
