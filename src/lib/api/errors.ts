@@ -1,28 +1,35 @@
-export type ApiErrorDetails = {
-  field?: string;
-  message: string;
-};
+import type { ApiErrorDetail } from "@/types/api";
 
 export class ApiError extends Error {
   readonly status: number;
-  readonly errorDetails?: ApiErrorDetails[];
+  readonly details: ApiErrorDetail[];
 
-  constructor(message: string, status: number, errorDetails?: ApiErrorDetails[]) {
+  constructor(
+    message: string,
+    status: number,
+    details: ApiErrorDetail[] = [],
+  ) {
     super(message);
     this.name = "ApiError";
     this.status = status;
-    this.errorDetails = errorDetails;
+    this.details = details;
   }
 }
 
 export class UnauthorizedError extends ApiError {
   constructor(
-    message = "Session expired. Please login again.",
-    errorDetails?: ApiErrorDetails[],
+    message = "You need to sign in to continue.",
+    details: ApiErrorDetail[] = [],
   ) {
-    super(message, 401, errorDetails);
+    super(message, 401, details);
     this.name = "UnauthorizedError";
   }
+}
+
+export type ApiErrorDetails = ApiErrorDetail;
+
+export function isApiError(error: unknown): error is ApiError {
+  return error instanceof ApiError;
 }
 
 export function isUnauthorizedError(error: unknown): error is UnauthorizedError {

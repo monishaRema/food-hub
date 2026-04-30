@@ -1,24 +1,56 @@
-import { DietaryType, MealAvailability } from "@/constants";
+export const dietaryTypes = ["VEG", "NON_VEG", "VEGAN"] as const;
 
-export type DietaryTypeValue = (typeof DietaryType)[number];
+export const mealAvailabilityValues = ["AVAILABLE", "UNAVAILABLE"] as const;
 
-export type MealAvailabilityValue = (typeof MealAvailability)[number];
+export type DietaryType = (typeof dietaryTypes)[number];
 
-export type Meal = {
+export type MealAvailability = (typeof mealAvailabilityValues)[number];
+
+export type DietaryTypeValue = DietaryType;
+
+export type MealAvailabilityValue = MealAvailability;
+
+export interface MealCategory {
+  id?: string;
+  name: string;
+}
+
+export interface Meal {
   id: string;
   providerId?: string;
-  name?: string;
+  categoryId?: string;
+  name: string;
+  price: number;
   image?: string;
-  price?: string | number;
-  dietary?: DietaryTypeValue;
   excerpt?: string;
   details?: string;
-  category?: {
-    name?: string;
-  };
-  categoryId?: string;
+  dietary?: DietaryType;
+  availability?: MealAvailability;
   isFeatured?: boolean;
-  availability?: MealAvailabilityValue;
   createdAt?: string;
   updatedAt?: string;
-};
+  category?: MealCategory;
+}
+
+export interface FeaturedMeal {
+  id: string;
+  name: string;
+  image?: string;
+  price: number;
+  providerId: string;
+  dietary?: DietaryType;
+  excerpt?: string;
+  isFeatured: boolean;
+  availability?: MealAvailability;
+  category?: {
+    name: string;
+  };
+}
+
+export interface GetMealsParams {
+  page?: string;
+  limit?: string;
+  sortBy?: "name" | "price" | "createdAt" | "updatedAt";
+  sortOrder?: "asc" | "desc";
+  search?: string | undefined;
+}
