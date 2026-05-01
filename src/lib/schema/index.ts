@@ -39,3 +39,10 @@ export const adminUserQuerySchema = z
   })
   .strip();
 
+export const customerOrderQuerySchema = z
+  .object({
+    page: z.coerce.number().int().positive().catch(1),
+    limit: z.coerce.number().int().positive().max(100).catch(10),
+  })
+  .strip();
+

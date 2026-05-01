@@ -45,6 +45,41 @@ export type ProviderOrdersListResult = {
   totalPages?: number;
 };
 
+export type OrderStatus = ProviderOrderStatus;
+
+export type CustomerOrderProvider = {
+  id: string;
+  shopName: string;
+};
+
+export type CustomerOrderItem = {
+  id: string;
+  mealId: string;
+  mealNameSnapshot: string;
+  quantity: number;
+  price: number | string;
+};
+
+export type CustomerOrder = {
+  id: string;
+  userId: string;
+  status: OrderStatus;
+  totalAmount: number | string;
+  deliveryAddress: string;
+  contactPhone: string;
+  createdAt: string;
+  provider: CustomerOrderProvider;
+  orderItems: CustomerOrderItem[];
+};
+
+export type CustomerOrdersListResult = {
+  items: CustomerOrder[];
+  page: number;
+  limit: number;
+  total?: number;
+  totalPages?: number;
+};
+
 
 export type CartItem = {
   mealId: string;
@@ -77,3 +112,23 @@ export type OrderCreateResponse = {
 };
 
 
+export type CustomerOrderDetails = {
+  id: string;
+  userId: string;
+  status:ProviderOrderStatus
+  totalAmount: string | number;
+  deliveryAddress: string;
+  contactPhone: string;
+  createdAt: string;
+  provider: {
+    id: string;
+    shopName: string;
+  };
+  orderItems: {
+    id: string;
+    mealId: string;
+    mealNameSnapshot: string;
+    quantity: number;
+    price: string | number;
+  }[];
+};
