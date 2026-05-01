@@ -1,5 +1,4 @@
 import { CreateMealForm } from "@/features/provider/components/createMealForm";
-
 import { getCategories } from "@/lib/api/category.server";
 
 export default async function ProviderMealsPage() {

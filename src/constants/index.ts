@@ -1,3 +1,4 @@
+
 export const UserRole =  {
   CUSTOMER : "CUSTOMER", 
   PROVIDER : "PROVIDER",
@@ -12,8 +13,10 @@ export const  UserStatus =  {
 
 
 export const DietaryType = {VEG:"VEG", NON_VEG: "NON_VEG", VEGAN: "VEGAN"} as const;
+export const DietaryTypeArr = ["VEG", "NON_VEG", "VEGAN"]
 
 export const MealAvailability = {AVAILABLE: "AVAILABLE", UNAVAILABLE:  "UNAVAILABLE"} as const;
+export const MealAvailabilityArr = ["AVAILABLE" , "UNAVAILABLE"]
 
 export const ProviderOrderStatusFlow = {
   PENDING: "CONFIRMED",

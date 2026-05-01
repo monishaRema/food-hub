@@ -21,7 +21,7 @@ export interface ApiResponse<T> {
 
 export type ApiFetchResult<T> = {
   data?: T;
-  meta?: Meta;
+  meta: Meta | null;
 };
 
 export interface PaginatedPayload<T> {

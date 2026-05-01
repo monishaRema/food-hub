@@ -128,9 +128,9 @@ export default async function MealSinglePage({
                         </CardTitle>
                       </CardHeader>
                       <CardContent className="pb-5">
-                        <p className="text-lg font-semibold text-[#111331]">
+                        <Link href={`/providers/${meal.providerId}`} className="text-lg font-semibold text-[#111331] hover:text-orange-500">
                           {meal.provider.shopName}
-                        </p>
+                        </Link>
                       </CardContent>
                     </Card>
 

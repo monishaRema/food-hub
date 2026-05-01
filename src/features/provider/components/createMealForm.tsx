@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "@tanstack/react-form";
 import { toast } from "sonner";
 
-import { DietaryType, MealAvailability } from "@/constants";
+
 import { createProviderMeal } from "@/lib/api/provider";
 import { Button } from "@/components/ui/button";
 import {
@@ -31,6 +31,7 @@ import {
   type CreateMealFormValues,
   type CreateMealValues,
 } from "@/features/provider/schemas/create-meal-schema";
+import { DietaryTypeArr, MealAvailabilityArr } from "@/constants";
 
 const fieldClassName =
   "h-11 border-[#eadfd2] bg-white focus-visible:ring-[#f97316]/20";
@@ -240,7 +241,7 @@ export function CreateMealForm({
                         }
                         className={selectClassName}
                       >
-                        {DietaryType.map((dietaryOption) => (
+                        {DietaryTypeArr.map((dietaryOption) => (
                           <option key={dietaryOption} value={dietaryOption}>
                             {dietaryOption}
                           </option>
@@ -273,7 +274,7 @@ export function CreateMealForm({
                         }
                         className={selectClassName}
                       >
-                        {MealAvailability.map((availabilityOption) => (
+                        {MealAvailabilityArr.map((availabilityOption) => (
                           <option key={availabilityOption} value={availabilityOption}>
                             {availabilityOption}
                           </option>

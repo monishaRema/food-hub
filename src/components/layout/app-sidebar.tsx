@@ -39,6 +39,7 @@ function getNavByRole(role?: string): NavGroup[] {
           { title: "Dashboard", url: "/dashboard/admin" },
           { title: "View Users", url: "/dashboard/admin/users" },
           { title: "Categories", url: "/dashboard/admin/categories" },
+          { title: "Create Category", url: "/dashboard/admin/create-category" },
           { title: "Orders", url: "/dashboard/admin/orders" },
           { title: "Providers", url: "/dashboard/admin/providers" },
           {title:"Home",url:"/"}
