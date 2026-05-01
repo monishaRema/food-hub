@@ -1,4 +1,4 @@
-import { CreateCategoryForm } from "@/features/admin/createCategoryForm";
+import { CreateCategoryForm } from "@/features/admin/components/createCategoryForm";
 
 export default function CreateCategoryPage() {
   return (

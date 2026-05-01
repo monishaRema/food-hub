@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect } from "react";
+import { startTransition, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { ShieldAlert, Tag } from "lucide-react";
 
@@ -25,14 +25,13 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { createCategoryClient } from "@/lib/api/category";
-import { UnauthorizedError } from "@/lib/api/errors";
 import { buildLoginRedirectPath } from "@/lib/auth/login-redirect";
 import { useAuth } from "@/providers/AuthProvider";
 import {
   type CreateCategoryPayload,
   createCategorySchema,
 } from "@/lib/schema/category.schema";
+import { createCategoryAction } from "@/features/admin/actions/create-category-action";
 
 const defaultValues: CreateCategoryPayload = {
   name: "",
@@ -76,16 +75,25 @@ export function CreateCategoryForm({
       const toastId = toast.loading("Creating category");
 
       try {
-        await createCategoryClient(value);
-        form.reset();
-        router.push("/dashboard/admin/categories");
-        toast.success("Category created successfully", { id: toastId });
-      } catch (error) {
-        if (error instanceof UnauthorizedError) {
-          router.replace(buildLoginRedirectPath("/dashboard/admin/create-category"));
+        const result = await createCategoryAction(value);
+
+        if (!result.success) {
+          if (result.reason === "unauthorized") {
+            router.replace(buildLoginRedirectPath("/dashboard/admin/create-category"));
+            return;
+          }
+
+          toast.error(result.message, { id: toastId });
           return;
         }
 
+        form.reset();
+        startTransition(() => {
+          router.push("/dashboard/admin/categories");
+          router.refresh();
+        });
+        toast.success("Category created successfully", { id: toastId });
+      } catch (error) {
         const message =
           error instanceof Error
             ? error.message
@@ -202,7 +210,6 @@ export function CreateCategoryForm({
                 );
               }}
             />
-
           </FieldGroup>
         </form>
       </CardContent>

@@ -1,5 +1,5 @@
-import { DashboardProfileClient } from "@/features/auth/components/dashboard-profile-client";
+import { DashboardProfilePage } from "@/features/auth/components/dashboard-profile-page";
 
 export default function DashboardPage() {
-  return <DashboardProfileClient nextPath="/dashboard" />;
+  return <DashboardProfilePage nextPath="/dashboard" />;
 }

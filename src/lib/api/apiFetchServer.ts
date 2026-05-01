@@ -8,8 +8,7 @@ import {
   type ApiErrorDetails,
   UnauthorizedError,
 } from "@/lib/api/errors";
-import type { ApiFetchMethod } from "@/lib/api/types";
-import type { ApiFetchResult, ApiResponse } from "@/types/api";
+import type { ApiFetchMethod, ApiFetchResult, ApiResponse } from "@/types/api";
 
 type ServerApiFetchOptions = {
   method?: ApiFetchMethod;

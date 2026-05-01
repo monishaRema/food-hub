@@ -32,3 +32,10 @@ export const providerQuerySchema = z
   })
   .strip();
 
+export const adminUserQuerySchema = z
+  .object({
+    page: z.coerce.number().int().positive().catch(1),
+    limit: z.coerce.number().int().positive().max(100).catch(10),
+  })
+  .strip();
+

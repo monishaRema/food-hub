@@ -1,5 +1,6 @@
 export const tags = {
     meals: "meals",
     providers: "providers",
-    categories: "categories"
+    categories: "categories",
+    users: "users"
 } as const
