@@ -8,6 +8,7 @@ import { mealPageQuerySchema } from "@/lib/schema";
 export default async function MealPage({ searchParams }: SearchParamsType) {
   const rawSearchParams = await searchParams;
   const query = mealPageQuerySchema.parse(rawSearchParams);
+
   const meals = await getMeals(query);
   const mealItems = meals.data ?? [];
   return (

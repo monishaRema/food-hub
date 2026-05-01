@@ -10,6 +10,14 @@ export async function DashboardProfilePage({
   try {
     const user = await getCurrentUser();
 
+    if (!user) {
+      return (
+        <DashboardProfileError
+          message="We could not load your account details at the moment."
+        />
+      );
+    }
+
     return <DashboardProfile user={user} />;
   } catch (error) {
     redirectIfUnauthorized(error, nextPath);

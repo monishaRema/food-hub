@@ -24,6 +24,7 @@ import {
 import { env } from "@/env";
 import { cn } from "@/lib/utils/utils";
 import { useAuth } from "@/providers/AuthProvider";
+import { useCart } from "@/providers/CartProvider";
 import { useLogout } from "@/hooks/useLogout";
 
 interface MenuItem {
@@ -75,6 +76,7 @@ const Navbar = ({
   className,
 }: NavbarProps) => {
   const { user, isAuthenticated, isLoading } = useAuth();
+  const { itemCount, isHydrated } = useCart();
   const logout = useLogout();
   const pathname = usePathname();
 
@@ -137,12 +139,19 @@ const Navbar = ({
                   size="icon"
                   className={cn(
                     "border-border/70 bg-transparent hover:bg-[#efe4d7]",
-                    isActivePath("/orders") &&
+                    isActivePath("/cart") &&
                       "border-[#f97316]/30 bg-[#fff2e8] text-[#f97316] hover:bg-[#fff2e8]",
                   )}
                 >
-                  <Link href="/orders" aria-label="My orders">
-                    <ShoppingCart className="size-4" />
+                  <Link href="/cart" aria-label="My orders">
+                    <div className="relative">
+                      <ShoppingCart className="size-4" />
+                      {isHydrated && itemCount > 0 ? (
+                        <span className="absolute -top-2 -right-2 flex min-h-4 min-w-4 items-center justify-center rounded-full bg-[#f97316] px-1 text-[10px] font-bold text-white">
+                          {itemCount}
+                        </span>
+                      ) : null}
+                    </div>
                   </Link>
                 </Button>
 
@@ -252,16 +261,19 @@ const Navbar = ({
                           variant="outline"
                           className={cn(
                             "border-border/70 bg-transparent hover:bg-[#efe4d7]",
-                            isActivePath("/orders") &&
+                            isActivePath("/cart") &&
                               "border-[#f97316]/30 bg-[#fff2e8] text-[#f97316] hover:bg-[#fff2e8]",
                           )}
                         >
                           <Link
-                            href="/orders"
+                            href="/cart"
                             className="flex items-center gap-2"
                           >
                             <ShoppingCart className="size-4" />
-                            <span>My orders</span>
+                            <span>
+                              Cart
+                              {isHydrated && itemCount > 0 ? ` (${itemCount})` : ""}
+                            </span>
                           </Link>
                         </Button>
 

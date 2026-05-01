@@ -6,7 +6,7 @@ export const mealPageQuerySchema = z
 
     page: z.coerce.number().int().positive().catch(1),
 
-    limit: z.coerce.number().int().positive().max(100).catch(10),
+    limit: z.coerce.number().int().positive().max(100).catch(8),
 
     sortBy: z
       .enum(["createdAt", "updatedAt", "price", "name"])

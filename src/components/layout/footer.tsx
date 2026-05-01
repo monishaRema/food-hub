@@ -11,7 +11,7 @@ const exploreLinks = [
 const accountLinks = [
   { label: "Log in", href: "/auth/login" },
   { label: "Sign up", href: "/auth/signup" },
-  { label: "My orders", href: "/orders" },
+  { label: "Cart", href: "/cart" },
 ];
 
 export default function Footer() {

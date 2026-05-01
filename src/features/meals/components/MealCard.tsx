@@ -9,6 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { DietaryType } from "@/constants";
+import { AddToCartButton } from "@/features/orders/components/AddToCartButton";
 import { formatPrice } from "@/lib/utils/format";
 import type { FeaturedMeal, Meal } from "@/types/meal";
 import Image from "next/image";
@@ -82,7 +83,16 @@ export function CardImage({ meal, mode = "default" }: CardImageProps) {
       </CardHeader>
       <CardFooter>
         {mode === "provider" ? (
-          <Button className="h-10 w-full text-md font-bold">Add to cart</Button>
+          <AddToCartButton
+            meal={{
+              mealId: meal.id,
+              providerId: meal.providerId ?? "",
+              name: meal.name,
+              image: meal.image,
+              price: meal.price,
+            }}
+            className="h-10 w-full text-md font-bold"
+          />
         ) : (
           <Link href={`/meals/${meal.id}`} className="w-full">
             <Button className="h-10 w-full text-md font-bold">

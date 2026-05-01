@@ -44,3 +44,36 @@ export type ProviderOrdersListResult = {
   total?: number;
   totalPages?: number;
 };
+
+
+export type CartItem = {
+  mealId: string;
+  providerId: string;
+  name: string;
+  image?: string;
+  price: number; 
+  quantity: number;
+};
+
+export type CartMealInput = {
+  mealId: string;
+  providerId: string;
+  name: string;
+  image?: string;
+  price: number;
+};
+
+export type CreateOrderType = {
+    deliveryAddress: string;
+    contactPhone: string;
+    items: {
+        mealId: string;
+        quantity: number;
+    }[];
+}
+
+export type OrderCreateResponse = {
+  id?: string;
+};
+
+

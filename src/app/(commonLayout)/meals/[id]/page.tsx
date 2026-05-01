@@ -6,7 +6,9 @@ import { ArrowLeft, Star } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { isApiError } from "@/lib/api/errors";
+import { AddToCartButton } from "@/features/orders/components/AddToCartButton";
 import { getSingleMeal } from "@/lib/api/meals.api";
 import { formatDate, formatEnumLabel, formatPrice } from "@/lib/utils/format";
 import { ParamsIdType } from "@/types";
@@ -167,6 +169,25 @@ export default async function MealSinglePage({
                       <p className="mt-1 text-sm text-stone-500">
                         Last updated {formatDate(meal.updatedAt)}
                       </p>
+                    </div>
+                    <div className="flex flex-col gap-3 sm:flex-row">
+                      <AddToCartButton
+                        meal={{
+                          mealId: meal.id,
+                          providerId: meal.providerId,
+                          name: meal.name,
+                          image: meal.image,
+                          price: meal.price,
+                        }}
+                        className="h-11 bg-[#f97316] px-6 text-white hover:bg-[#ea6b12]"
+                      />
+                      <Button
+                        asChild
+                        variant="outline"
+                        className="h-11 border-[#eadfd2] bg-white"
+                      >
+                        <Link href="/cart">View cart</Link>
+                      </Button>
                     </div>
                   </div>
                 </div>
