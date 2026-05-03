@@ -37,7 +37,7 @@ export function ProviderMealDetails({ meal }: { meal: Meal }) {
         </Button>
 
         <Button asChild size="sm">
-          <Link href={`/dashboard/providers/meals/${meal.id}/edit`}>
+          <Link href={`/dashboard/provider/meals/${meal.id}/edit`}>
             <PencilLine />
             Edit meal
           </Link>
@@ -77,6 +77,7 @@ export function ProviderMealDetails({ meal }: { meal: Meal }) {
                   fill
                   sizes="(max-width: 1024px) 100vw, 240px"
                   className="object-cover"
+                  loading="eager"
                 />
               ) : (
                 <div className="flex h-full w-full items-center justify-center text-sm text-stone-400">

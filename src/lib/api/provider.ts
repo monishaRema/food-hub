@@ -10,7 +10,7 @@ import type {
   ProviderOrdersListResult,
   ProviderOrderStatusUpdate,
 } from "@/types/order";
-import { apiFetchServer } from "./apiFetchServer";
+
 
 export type RegisterProviderPayload = {
   shopName: string;
@@ -38,10 +38,6 @@ export type CreateMealPayload = {
 
 export type UpdateMealPayload = CreateMealPayload;
 
-type ProviderOrdersQuery = {
-  page?: number;
-  limit?: number;
-};
 
 type ProviderOrdersApiShape =
   | ProviderOrder[]
@@ -81,33 +77,6 @@ export async function getProviderMealById(id: string) {
   return apiFetch<Meal>(`/provider/meals/${id}`);
 }
 
-function normalizeProviderOrdersResult(
-  payload: ProviderOrdersApiShape,
-  fallbackPage: number,
-  fallbackLimit: number,
-): ProviderOrdersListResult {
-  if (Array.isArray(payload)) {
-    return {
-      items: payload,
-      page: fallbackPage,
-      limit: fallbackLimit,
-    };
-  }
-
-  const items = Array.isArray(payload.data)
-    ? payload.data
-    : Array.isArray(payload.orders)
-      ? payload.orders
-      : [];
-
-  return {
-    items,
-    page: payload.meta?.page ?? payload.page ?? fallbackPage,
-    limit: payload.meta?.limit ?? payload.limit ?? fallbackLimit,
-    total: payload.meta?.total ?? payload.total,
-    totalPages: payload.meta?.totalPages ?? payload.totalPages,
-  };
-}
 
 
 

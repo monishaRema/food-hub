@@ -1,11 +1,12 @@
-import { ProviderMealDetailsClient } from "@/features/provider/components/provider-meal-details-client";
+import { ProviderMealDetails } from "@/features/provider/components/provider-meal-details";
+import { getProviderMealById } from "@/lib/api/provider.server";
+import { ParamsIdType } from "@/types";
 
 export default async function ProviderMealPage({
   params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+}: ParamsIdType) {
   const { id } = await params;
+  const meal = await getProviderMealById(id)
 
-  return <ProviderMealDetailsClient mealId={id} />;
+  return <ProviderMealDetails meal={meal.data} />;
 }

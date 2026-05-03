@@ -15,6 +15,11 @@ import {
 } from "@/components/ui/table";
 import { formatEnumLabel, formatPrice } from "@/lib/utils/format";
 import type { Meal } from "@/types/meal";
+import { deleteProviderMeal } from "@/lib/api/provider";
+import { buildLoginRedirectPath } from "@/lib/auth/login-redirect";
+import { UnauthorizedError } from "@/lib/api/errors";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 function getAvailabilityVariant(availability?: Meal["availability"]) {
   return availability === "AVAILABLE" ? "default" : "outline";
@@ -24,15 +29,37 @@ function getDietaryVariant(dietary?: Meal["dietary"]) {
   return dietary === "VEGAN" ? "default" : "secondary";
 }
 
-export default function MealTable({
-  meals,
-  deletingMealId,
-  onDeleteMeal,
-}: {
-  meals: Meal[];
-  deletingMealId?: string | null;
-  onDeleteMeal?: (meal: Meal) => void | Promise<void>;
-}) {
+export default function MealTable({ meals }: { meals: Meal[] }) {
+  const router = useRouter();
+
+  async function handleDeleteMeal(mealId: string) {
+    const confirmed = window.confirm(
+      "Delete meal? This action cannot be undone.",
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    const toastId = toast.loading("Deleting meal");
+
+    try {
+      await deleteProviderMeal(mealId);
+      toast.success("Meal deleted successfully", { id: toastId });
+      router.refresh();
+    } catch (err) {
+      if (err instanceof UnauthorizedError) {
+        router.replace(buildLoginRedirectPath("/dashboard/provider/meals"));
+        return;
+      }
+
+      toast.error(
+        err instanceof Error ? err.message : "Unable to delete meal right now.",
+        { id: toastId },
+      );
+    }
+  }
+
   return (
     <div className="overflow-hidden rounded-[28px] border border-[#eadfd2] bg-white shadow-sm">
       <div className="border-b border-[#f1e5d7] px-6 py-5">
@@ -50,8 +77,8 @@ export default function MealTable({
             <TableHead>Dietary</TableHead>
             <TableHead>Availability</TableHead>
             <TableHead>Featured</TableHead>
-            <TableHead className="text-right">Price</TableHead>
-            <TableHead className="px-6">Actions</TableHead>
+            <TableHead className="">Price</TableHead>
+            <TableHead className="px-6 text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
 
@@ -67,7 +94,10 @@ export default function MealTable({
             </TableRow>
           ) : (
             meals.map((meal) => (
-              <TableRow key={meal.id} className="border-[#f7ede2] hover:bg-[#fffaf5]">
+              <TableRow
+                key={meal.id}
+                className="border-[#f7ede2] hover:bg-[#fffaf5]"
+              >
                 <TableCell className="px-6 py-4">
                   <div className="flex min-w-[280px] items-center gap-4">
                     <div className="relative h-14 w-14 overflow-hidden rounded-2xl bg-stone-100">
@@ -116,26 +146,29 @@ export default function MealTable({
                   </Badge>
                 </TableCell>
 
-                <TableCell className="text-right font-medium text-stone-900">
+                <TableCell className=" font-medium text-stone-900">
                   {formatPrice(meal.price)}
                 </TableCell>
 
                 <TableCell className="px-6">
                   <div className="flex flex-wrap justify-end gap-2">
                     <Button asChild variant="outline" size="sm">
-                      <Link href={`/dashboard/providers/meals/${meal.id}`}>View</Link>
+                      <Link href={`/dashboard/provider/meals/${meal.id}`}>
+                        View
+                      </Link>
                     </Button>
                     <Button asChild variant="outline" size="sm">
-                      <Link href={`/dashboard/providers/meals/${meal.id}/edit`}>Edit</Link>
+                      <Link href={`/dashboard/provider/meals/${meal.id}/edit`}>
+                        Edit
+                      </Link>
                     </Button>
                     <Button
                       type="button"
                       className="bg-red-700 text-white hover:bg-red-800"
                       size="sm"
-                      disabled={!onDeleteMeal || deletingMealId === meal.id}
-                      onClick={() => void onDeleteMeal?.(meal)}
+                      onClick={() => handleDeleteMeal(meal.id)}
                     >
-                      {deletingMealId === meal.id ? "Deleting..." : "Delete"}
+                      Delete
                     </Button>
                   </div>
                 </TableCell>

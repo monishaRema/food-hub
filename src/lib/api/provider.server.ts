@@ -2,15 +2,15 @@ import "server-only";
 
 import { apiFetchServer } from "@/lib/api/apiFetchServer";
 import type { Meal } from "@/types/meal";
-import type {
-  ProviderOrder,
-  ProviderOrderStatusUpdate,
-} from "@/types/order";
+import type { ProviderOrder, ProviderOrderStatusUpdate } from "@/types/order";
 import { ApiFetchResult } from "@/types/api";
 import { QuerySearchType } from "../schema";
+import { getQuery } from "../utils/query";
 
-export async function getProviderMeals() {
-  return apiFetchServer<Meal[]>("/provider/meals", {
+export async function getProviderMeals(params: QuerySearchType) {
+
+  const query = getQuery(params)
+  return apiFetchServer<ApiFetchResult<Meal>>(`/provider/meals${query? `?${query}`: ""}`, {
     cache: "no-store",
   });
 }
@@ -21,30 +21,16 @@ export async function getProviderMealById(id: string) {
   });
 }
 
-
-
-
-
-export async function getProviderOrders(params:QuerySearchType) {
-  const searchParams = new URLSearchParams();
-
-  if (params.page !== undefined)
-    searchParams.set("page", String(params.page));
-
-  if (params.limit !== undefined)
-    searchParams.set("limit", String(params.limit));
-
-  const query = searchParams.toString();
-
-// /provider/orderspage=1&limit=2?
+export async function getProviderOrders(params: QuerySearchType) {
+  const query = getQuery(params);
   const response = await apiFetchServer<ApiFetchResult<ProviderOrder>>(
-    `/provider/orders${query? `?${query}`: ""}`,
+    `/provider/orders${query ? `?${query}` : ""}`,
     {
       cache: "no-store",
     },
   );
 
-  return response
+  return response;
 }
 
 export async function updateProviderOrderStatusServer(
