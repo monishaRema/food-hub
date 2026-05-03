@@ -28,7 +28,8 @@ import {
   type RegisterProviderValues,
 } from "@/features/provider/schemas/register-provider-schema";
 import { useAuth } from "@/providers/AuthProvider";
-import { registerProviderProfile } from "@/lib/api/provider";
+import { registerProviderAction } from "../actions/register-provider-profile.action";
+
 
 const defaultValues: RegisterProviderValues = {
   shopName: "",
@@ -51,7 +52,7 @@ export function BecomeProviderForm({
       const toastId = toast.loading("Submitting provider application");
 
       try {
-        await registerProviderProfile({
+        await registerProviderAction({
           shopName: value.shopName.trim(),
           address: value.address.trim(),
           ...(value.shopImage?.trim()

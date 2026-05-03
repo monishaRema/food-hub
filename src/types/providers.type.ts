@@ -35,3 +35,10 @@ export type CreateMealPayload = {
 };
 
 export type UpdateMealPayload = CreateMealPayload;
+
+
+export type RegisterProviderPayload = {
+  shopName: string;
+  address: string;
+  shopImage?: string;
+};

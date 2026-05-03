@@ -7,7 +7,7 @@ import type { ProviderOrder, ProviderOrderStatusUpdate } from "@/types/order";
 import { ApiFetchResult } from "@/types/api";
 import { QuerySearchType } from "../schema";
 import { getQuery } from "../utils/query";
-import { CreateMealPayload, UpdateMealPayload } from "@/types/providers.type";
+import { CreateMealPayload, RegisterProviderPayload, UpdateMealPayload } from "@/types/providers.type";
 
 
 export async function getProviderMeals(params: QuerySearchType) {
@@ -74,6 +74,26 @@ export async function createProviderMeal(payload: CreateMealPayload) {
   return apiFetchServer<ApiFetchResult<Meal>>("/provider/meals", {
     method:"POST",
     data:payload,
+    cache:"no-store"
+  });
+}
+
+
+export async function registerProviderProfile(payload:RegisterProviderPayload){
+  return apiFetchServer("/provider/profile",{
+    method:"POST",
+    data:payload,
+    cache:"no-store"
+  })
+}
+
+export async function updateProviderOrderStatus(
+  id: string,
+  status: ProviderOrderStatusUpdate,
+) {
+  return apiFetchServer<ProviderOrder>(`/provider/orders/${id}/status`, {
+    method:"PATCH", 
+    data:status,
     cache:"no-store"
   });
 }
