@@ -10,6 +10,7 @@ import type {
   ProviderOrdersListResult,
   ProviderOrderStatusUpdate,
 } from "@/types/order";
+import { apiFetchServer } from "./apiFetchServer";
 
 export type RegisterProviderPayload = {
   shopName: string;
@@ -108,22 +109,7 @@ function normalizeProviderOrdersResult(
   };
 }
 
-export async function getProviderOrders(
-  query: ProviderOrdersQuery = {},
-): Promise<ProviderOrdersListResult> {
-  const page = query.page ?? 1;
-  const limit = query.limit ?? 10;
-  const searchParams = new URLSearchParams({
-    page: String(page),
-    limit: String(limit),
-  });
 
-  const response = await apiFetch<ProviderOrdersApiShape>(
-    `/provider/orders?${searchParams.toString()}`,
-  );
-
-  return normalizeProviderOrdersResult(response, page, limit);
-}
 
 export async function updateProviderOrderStatus(
   id: string,

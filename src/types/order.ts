@@ -14,27 +14,32 @@ export type ProviderOrderStatusUpdate =
 
 export type ProviderOrder = {
   id: string;
-  status?: ProviderOrderStatus;
-  quantity?: number;
-  totalPrice?: number | string;
-  totalAmount?: number | string;
-  createdAt?: string;
-  updatedAt?: string;
-  customer?: {
-    id?: string;
-    name?: string;
-    email?: string;
+  userId: string;
+  status: ProviderOrderStatus;
+
+  totalAmount: string; 
+
+  deliveryAddress: string;
+  contactPhone: string;
+  createdAt: string;
+
+  provider: {
+    id: string;
+    shopName: string;
   };
-  user?: {
-    id?: string;
-    name?: string;
-    email?: string;
+
+  user: {
+    name: string;
+    email: string;
   };
-  meal?: {
-    id?: string;
-    name?: string;
-    image?: string;
-  };
+
+  orderItems: {
+    id: string; 
+    mealId: string;
+    mealNameSnapshot: string;
+    quantity: number;
+    price: number;
+  }[];
 };
 
 export type ProviderOrdersListResult = {
@@ -80,13 +85,12 @@ export type CustomerOrdersListResult = {
   totalPages?: number;
 };
 
-
 export type CartItem = {
   mealId: string;
   providerId: string;
   name: string;
   image?: string;
-  price: number; 
+  price: number;
   quantity: number;
 };
 
@@ -99,23 +103,22 @@ export type CartMealInput = {
 };
 
 export type CreateOrderType = {
-    deliveryAddress: string;
-    contactPhone: string;
-    items: {
-        mealId: string;
-        quantity: number;
-    }[];
-}
+  deliveryAddress: string;
+  contactPhone: string;
+  items: {
+    mealId: string;
+    quantity: number;
+  }[];
+};
 
 export type OrderCreateResponse = {
   id?: string;
 };
 
-
 export type CustomerOrderDetails = {
   id: string;
   userId: string;
-  status:ProviderOrderStatus
+  status: ProviderOrderStatus;
   totalAmount: string | number;
   deliveryAddress: string;
   contactPhone: string;

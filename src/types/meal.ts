@@ -75,3 +75,16 @@ export interface SingleMeal extends Meal {
   provider: MealProvider;
   reviews: MealReview[];
 }
+
+export type CreateReviewType = {
+    mealId: string;
+    orderId: string;
+    rating: number;
+    content: string;
+}
+
+export type ReviewEligibility = {
+  eligibility: boolean;
+  orderId?: string | null;
+  message: string;
+};

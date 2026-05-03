@@ -1,6 +1,13 @@
 import { apiFetchServer } from "@/lib/api/apiFetchServer";
 import type { ApiFetchResult, PaginatedPayload } from "@/types/api";
-import type { FeaturedMeal, GetMealsParams, Meal, SingleMeal } from "@/types/meal";
+import type {
+  CreateReviewType,
+  FeaturedMeal,
+  GetMealsParams,
+  Meal,
+  ReviewEligibility,
+  SingleMeal,
+} from "@/types/meal";
 
 export async function getMeals(params: GetMealsParams = {}) {
   const searchParams = new URLSearchParams();
@@ -55,5 +62,24 @@ export async function getSingleMeal(id: string) {
     throw new Error("Meal not found.");
   }
 
+  return response.data;
+}
+
+
+export async function createReview(data: CreateReviewType){
+   const response = await apiFetchServer(`/reviews`, {
+    method: "POST",
+    data: data
+  });
+
+
+  return response;
+}
+
+
+export async function checkReviewEligibility(mealId: string){
+  const response = await apiFetchServer<ReviewEligibility>(`/reviews/eligibility/${mealId}`, {
+    cache: "no-store",
+  });
   return response.data;
 }

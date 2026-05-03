@@ -16,6 +16,18 @@ export const mealPageQuerySchema = z
   })
   .strip();
 
+
+
+export const querySearchSchema = z
+  .object({
+    page: z.coerce.number().int().positive().catch(1),
+
+    limit: z.coerce.number().int().positive().max(100).catch(10),
+  })
+  .strip();
+
+  export type QuerySearchType = z.infer<typeof querySearchSchema>
+
 export const providerQuerySchema = z
   .object({
     search: z.string().trim().optional().catch(undefined),
@@ -24,9 +36,7 @@ export const providerQuerySchema = z
 
     limit: z.coerce.number().int().positive().max(100).catch(10),
 
-    sortBy: z
-      .enum(["createdAt", "updatedAt", "shopName"])
-      .catch("createdAt"),
+    sortBy: z.enum(["createdAt", "updatedAt", "shopName"]).catch("createdAt"),
 
     sortOrder: z.enum(["asc", "desc"]).catch("desc"),
   })
@@ -45,4 +55,3 @@ export const customerOrderQuerySchema = z
     limit: z.coerce.number().int().positive().max(100).catch(10),
   })
   .strip();
-

@@ -7,11 +7,12 @@ import { Badge } from "@/components/ui/badge";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { isApiError } from "@/lib/api/errors";
+import { isApiError, isUnauthorizedError } from "@/lib/api/errors";
 import { AddToCartButton } from "@/features/orders/components/AddToCartButton";
-import { getSingleMeal } from "@/lib/api/meals.api";
+import { checkReviewEligibility, getSingleMeal } from "@/lib/api/meals.api";
 import { formatDate, formatEnumLabel, formatPrice } from "@/lib/utils/format";
 import { ParamsIdType } from "@/types";
+import { ReviewForm } from "@/features/meals/components/ReviewForm";
 
 export default async function MealSinglePage({
   params,
@@ -20,6 +21,16 @@ export default async function MealSinglePage({
 
   try {
     const meal = await getSingleMeal(id);
+    let reviewEligibility: Awaited<ReturnType<typeof checkReviewEligibility>> | null = null;
+
+    try {
+      reviewEligibility = await checkReviewEligibility(id);
+    } catch (error) {
+      if (!isUnauthorizedError(error)) {
+        throw error;
+      }
+    }
+
     const averageRating = meal.reviews.length > 0 ? 
         (
             meal.reviews.reduce((total, review) => total + review.rating, 0) /
@@ -245,7 +256,19 @@ export default async function MealSinglePage({
                 No reviews yet for this meal.
               </div>
             )}
+
           </section>
+          <section>
+            {reviewEligibility?.eligibility && reviewEligibility.orderId ? (
+              <ReviewForm mealId={meal.id} orderId={reviewEligibility.orderId} />
+            ) : (
+              <div className="rounded-[24px] border border-dashed border-[#eadfd2] bg-white/70 px-6 py-10 text-center text-sm text-stone-500">
+                <h3 className="text-2xl font-bold">Review the meal</h3>
+                {reviewEligibility?.message ?? "You need a delivered order for this meal before you can leave a review."}
+              </div>
+            )}
+          </section>
+          
         </div>
       </main>
     );
