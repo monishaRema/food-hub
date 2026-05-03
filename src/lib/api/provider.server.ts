@@ -1,10 +1,13 @@
 import "server-only";
 
 import { apiFetchServer } from "@/lib/api/apiFetchServer";
-import type { QuerySearchType } from "@/lib/schema";
 import type { Meal } from "@/types/meal";
-import type { Meta } from "@/types/api";
-import type { ProviderOrder, ProviderOrderStatusUpdate } from "@/types/order";
+import type {
+  ProviderOrder,
+  ProviderOrderStatusUpdate,
+} from "@/types/order";
+import { ApiFetchResult } from "@/types/api";
+import { QuerySearchType } from "../schema";
 
 export async function getProviderMeals() {
   return apiFetchServer<Meal[]>("/provider/meals", {
@@ -18,93 +21,30 @@ export async function getProviderMealById(id: string) {
   });
 }
 
-type ProviderOrdersApiShape =
-  | ProviderOrder[]
-  | {
-      data?: ProviderOrder[];
-      orders?: ProviderOrder[];
-      meta?: {
-        page?: number;
-        limit?: number;
-        total?: number;
-        totalPages?: number;
-      };
-      page?: number;
-      limit?: number;
-      total?: number;
-      totalPages?: number;
-    };
 
-function normalizeProviderOrdersData(payload: ProviderOrdersApiShape) {
-  if (Array.isArray(payload)) {
-    return payload;
-  }
 
-  return Array.isArray(payload.data)
-    ? payload.data
-    : Array.isArray(payload.orders)
-      ? payload.orders
-      : [];
-}
 
-function normalizeProviderOrdersMeta(
-  payload: ProviderOrdersApiShape,
-  fallbackMeta: Meta | null,
-): Meta | null {
-  if (fallbackMeta) {
-    return fallbackMeta;
-  }
 
-  if (Array.isArray(payload)) {
-    return null;
-  }
-
-  const totalItems = payload.meta?.total ?? payload.total;
-  const totalPage = payload.meta?.totalPages ?? payload.totalPages;
-
-  if (totalItems === undefined || totalPage === undefined) {
-    return null;
-  }
-
-  return {
-    page: payload.meta?.page ?? payload.page ?? 1,
-    limit: payload.meta?.limit ?? payload.limit ?? 10,
-    totalItems,
-    totalPage,
-  };
-}
-
-export async function getProviderOrders(
-  params?: QuerySearchType,
-): Promise<
-  {
-    data: ProviderOrder[];
-    meta: Meta | null;
-  }
-> {
+export async function getProviderOrders(params:QuerySearchType) {
   const searchParams = new URLSearchParams();
-  const query: Partial<QuerySearchType> = params ?? {};
 
-  if (query.page !== undefined) {
-    searchParams.set("page", String(query.page));
-  }
+  if (params.page !== undefined)
+    searchParams.set("page", String(params.page));
 
-  if (query.limit !== undefined) {
-    searchParams.set("limit", String(query.limit));
-  }
+  if (params.limit !== undefined)
+    searchParams.set("limit", String(params.limit));
 
-  const queryString = searchParams.toString();
-  const response = await apiFetchServer<ProviderOrdersApiShape>(
-    `/provider/orders${queryString ? `?${queryString}` : ""}`,
+  const query = searchParams.toString();
+
+// /provider/orderspage=1&limit=2?
+  const response = await apiFetchServer<ApiFetchResult<ProviderOrder>>(
+    `/provider/orders${query? `?${query}`: ""}`,
     {
       cache: "no-store",
     },
   );
 
-  return {
-    data: normalizeProviderOrdersData(response.data ?? []),
-    meta: normalizeProviderOrdersMeta(response.data ?? [], response.meta),
-  };
+  return response
 }
 
 export async function updateProviderOrderStatusServer(
