@@ -90,7 +90,6 @@ export function CreateCategoryForm({
         form.reset();
         startTransition(() => {
           router.push("/dashboard/admin/categories");
-          router.refresh();
         });
         toast.success("Category created successfully", { id: toastId });
       } catch (error) {

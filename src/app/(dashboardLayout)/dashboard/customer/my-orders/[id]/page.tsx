@@ -18,7 +18,7 @@ export default async function SingleOrderPage({ params }: ParamsIdType) {
 
     return <OrderDetails order={order} />;
   } catch (error) {
-    redirectIfUnauthorized(error, `/dashboard/my-orders/${id}`);
+    redirectIfUnauthorized(error, `/dashboard/customer/my-orders/${id}`);
 
     if (isApiError(error) && error.status === 404) {
       notFound();

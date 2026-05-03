@@ -12,7 +12,7 @@ export async function updateProviderOrderStatusAction(
 ) {
   try {
     await updateProviderOrderStatus(orderId, status);
-    revalidatePath("/dashboard/providers/orders");
+    revalidatePath("/dashboard/provider/orders");
   } catch (error) {
     if (error instanceof ApiError) {
       throw new Error(error.message);

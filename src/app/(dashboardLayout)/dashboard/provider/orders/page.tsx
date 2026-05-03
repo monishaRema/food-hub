@@ -25,7 +25,7 @@ export default async function ProviderOrdersPage({searchParams}:SearchParamsType
       </section>
     );
   } catch (error) {
-    redirectIfUnauthorized(error, "/dashboard/providers/orders");
+    redirectIfUnauthorized(error, "/dashboard/provider/orders");
 
     if (isApiError(error)) {
       return (

@@ -3,7 +3,6 @@ import "server-only";
 import { apiFetchServer } from "@/lib/api/apiFetchServer";
 import type { Category } from "@/types/category";
 import { CreateCategoryPayload } from "../schema/category.schema";
-import { revalidateTag } from "next/cache";
 import { tags } from "@/constants/cache";
 
 export async function getCategories() {
@@ -19,8 +18,6 @@ export async function createCategory(data: CreateCategoryPayload) {
     method: "POST",
     data,
   });
-
-  revalidateTag(tags.categories, "max");
 
   return response.data;
 }

@@ -63,7 +63,7 @@ export default function OrdersTable({
 
       if (!result.success) {
         if (result.reason === "unauthorized") {
-          router.replace(buildLoginRedirectPath("/dashboard/my-orders"));
+          router.replace(buildLoginRedirectPath("/dashboard/customer/my-orders"));
           return;
         }
 
@@ -119,7 +119,7 @@ export default function OrdersTable({
               <TableRow key={order.id} className="border-[#f7ede2] hover:bg-[#fffaf5]">
                 <TableCell className="px-6 py-4">
                   <div className="min-w-[200px]">
-                    <Link href={`/dashboard/my-orders/${order.id}`} className="font-medium text-stone-900 hover:text-orange-500">#{order.id.slice(0, 8)}</Link>
+                    <Link href={`/dashboard/customer/my-orders/${order.id}`} className="font-medium text-stone-900 hover:text-orange-500">#{order.id.slice(0, 8)}</Link>
                     <p className="mt-1 text-sm text-stone-600">
                       {formatDateTime(order.createdAt)}
                     </p>
@@ -159,7 +159,7 @@ export default function OrdersTable({
                 </TableCell>
                 <TableCell>
                   <div className="flex gap-2">
-                    <Link href={`/dashboard/my-orders/${order.id}`}>
+                    <Link href={`/dashboard/customer/my-orders/${order.id}`}>
                       <Button size="sm" variant="link" className="">
                         View
                       </Button>

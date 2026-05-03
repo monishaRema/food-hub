@@ -77,9 +77,11 @@ export async function updateProviderOrderStatus(
   id: string,
   status: ProviderOrderStatusUpdate,
 ) {
+
+
   return apiFetchServer<ProviderOrder>(`/provider/orders/${id}/status`, {
     method:"PATCH", 
-    data:status,
+    data:{status},
     cache:"no-store"
   });
 }

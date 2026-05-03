@@ -1,7 +1,9 @@
 "use server";
 
+import { tags } from "@/constants/cache";
 import { createCategory } from "@/lib/api/category.server";
 import { ApiError } from "@/lib/api/errors";
+import {  revalidateTag } from "next/cache";
 
 type CreateCategoryActionResult =
   | {
@@ -18,6 +20,7 @@ export async function createCategoryAction(input: {
 }): Promise<CreateCategoryActionResult> {
   try {
     await createCategory(input);
+    revalidateTag(tags.categories, "max")
 
     return {
       success: true,
