@@ -2,11 +2,15 @@ import "server-only";
 
 import { apiFetchServer } from "@/lib/api/apiFetchServer";
 import type {
+  AdminOrder,
   CreateOrderType,
   CustomerOrder,
   CustomerOrderDetails,
   OrderCreateResponse,
 } from "@/types/order";
+import { getQuery } from "../utils/query";
+import { QuerySearchType } from "../schema";
+import { ApiFetchResult } from "@/types/api";
 
 export async function createOrder(payload: CreateOrderType) {
   const response = await apiFetchServer<OrderCreateResponse>("/orders", {
@@ -34,28 +38,51 @@ export async function getOrdersByUser(query: GetOrdersByUserQuery = {}) {
     searchParams.set("limit", String(query.limit));
   }
 
-  const endpoint = searchParams.size > 0
-    ? `/orders?${searchParams.toString()}`
-    : "/orders";
+  const endpoint =
+    searchParams.size > 0 ? `/orders?${searchParams.toString()}` : "/orders";
 
   return apiFetchServer<CustomerOrder[]>(endpoint, {
     cache: "no-store",
   });
 }
 
-
-export async function getSingleOrder(id: string){
+export async function getSingleOrder(id: string) {
   const response = await apiFetchServer<CustomerOrderDetails>(`/orders/${id}`, {
     cache: "no-store",
   });
-  return response.data
+  return response.data;
 }
 
 export async function cancelOrder(id: string) {
-  const response = await apiFetchServer<OrderCreateResponse>(`/orders/${id}/cancel`, {
-    method: "PATCH",
-    cache: "no-store",
-  });
+  const response = await apiFetchServer<OrderCreateResponse>(
+    `/orders/${id}/cancel`,
+    {
+      method: "PATCH",
+      cache: "no-store",
+    },
+  );
 
   return response.data;
+}
+
+export async function getAdminOrders(params: QuerySearchType) {
+  const query = getQuery(params);
+  const response = await apiFetchServer<ApiFetchResult<AdminOrder>>(
+    `/admin/orders${query ? `?${query}` : ""}`,
+    {
+      cache: "no-store",
+    },
+  );
+
+  return response;
+}
+export async function getAdminSingleOrders(id: string) {
+  const response = await apiFetchServer<AdminOrder>(
+    `/admin/orders/${id}`,
+    {
+      cache: "no-store",
+    },
+  );
+
+  return response;
 }

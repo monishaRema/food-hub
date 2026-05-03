@@ -1,4 +1,4 @@
-export type ProviderOrderStatus =
+export type OrderStatus =
   | "PENDING"
   | "CONFIRMED"
   | "PREPARING"
@@ -12,34 +12,39 @@ export type ProviderOrderStatusUpdate =
   | "READY"
   | "DELIVERED";
 
-export type ProviderOrder = {
+export type ProviderOrderStatus = OrderStatus;
+
+type OrderProvider = {
+  id: string;
+  shopName: string;
+};
+
+type OrderItem = {
+  id: string;
+  mealId: string;
+  mealNameSnapshot: string;
+  quantity: number;
+  price: number;
+};
+
+type BaseOrder = {
   id: string;
   userId: string;
-  status: ProviderOrderStatus;
-
-  totalAmount: string; 
-
+  status: OrderStatus;
+  totalAmount: string;
   deliveryAddress: string;
   contactPhone: string;
   createdAt: string;
+  provider: OrderProvider;
+  orderItems: OrderItem[];
+};
 
-  provider: {
-    id: string;
-    shopName: string;
-  };
-
+export type ProviderOrder = BaseOrder & {
+  status: ProviderOrderStatus;
   user: {
     name: string;
     email: string;
   };
-
-  orderItems: {
-    id: string; 
-    mealId: string;
-    mealNameSnapshot: string;
-    quantity: number;
-    price: number;
-  }[];
 };
 
 export type ProviderOrdersListResult = {
@@ -50,30 +55,14 @@ export type ProviderOrdersListResult = {
   totalPages?: number;
 };
 
-export type OrderStatus = ProviderOrderStatus;
+export type CustomerOrderProvider = OrderProvider;
 
-export type CustomerOrderProvider = {
-  id: string;
-  shopName: string;
-};
-
-export type CustomerOrderItem = {
-  id: string;
-  mealId: string;
-  mealNameSnapshot: string;
-  quantity: number;
+export type CustomerOrderItem = Omit<OrderItem, "price"> & {
   price: number | string;
 };
 
-export type CustomerOrder = {
-  id: string;
-  userId: string;
-  status: OrderStatus;
+export type CustomerOrder = Omit<BaseOrder, "totalAmount" | "orderItems"> & {
   totalAmount: number | string;
-  deliveryAddress: string;
-  contactPhone: string;
-  createdAt: string;
-  provider: CustomerOrderProvider;
   orderItems: CustomerOrderItem[];
 };
 
@@ -115,18 +104,12 @@ export type OrderCreateResponse = {
   id?: string;
 };
 
-export type CustomerOrderDetails = {
-  id: string;
-  userId: string;
+export type CustomerOrderDetails = Omit<
+  BaseOrder,
+  "status" | "totalAmount" | "orderItems"
+> & {
   status: ProviderOrderStatus;
   totalAmount: string | number;
-  deliveryAddress: string;
-  contactPhone: string;
-  createdAt: string;
-  provider: {
-    id: string;
-    shopName: string;
-  };
   orderItems: {
     id: string;
     mealId: string;
@@ -134,4 +117,12 @@ export type CustomerOrderDetails = {
     quantity: number;
     price: string | number;
   }[];
+};
+
+export type AdminOrder = BaseOrder & {
+  user: {
+    id: string;
+    name: string;
+    email: string;
+  };
 };

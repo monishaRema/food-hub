@@ -1,7 +1,7 @@
 import { DashboardPageShell } from "@/components/shared/dashboard-page-shell";
 import PaginationControls from "@/components/shared/pagination-control";
 import UserTable from "@/features/admin/components/userTable";
-import { adminUserQuerySchema } from "@/lib/schema";
+import { querySearchSchema } from "@/lib/schema";
 import { getUsers } from "@/lib/api/user.server";
 import type { SearchParamsType } from "@/types";
 
@@ -9,7 +9,7 @@ export default async function AdminUsersPage({
   searchParams,
 }: SearchParamsType) {
   const rawSearchParams = await searchParams;
-  const query = adminUserQuerySchema.parse(rawSearchParams);
+  const query = querySearchSchema.parse(rawSearchParams);
   const users = await getUsers(query);
   const userItems = users.data ?? [];
   const totalItems = users.meta?.totalItems ?? userItems.length;

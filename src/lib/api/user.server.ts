@@ -1,28 +1,17 @@
 import { apiFetchServer } from "./apiFetchServer";
 import { tags } from "@/constants/cache";
 import type { AuthUser } from "@/types/user";
+import { getQuery } from "../utils/query";
+import { QuerySearchType } from "../schema";
 
-type GetUsersQuery = {
-  page?: number;
-  limit?: number;
-};
 
-export async function getUsers(query: GetUsersQuery = {}) {
-  const searchParams = new URLSearchParams();
 
-  if (query.page) {
-    searchParams.set("page", String(query.page));
-  }
+export async function getUsers(params: QuerySearchType) {
 
-  if (query.limit) {
-    searchParams.set("limit", String(query.limit));
-  }
+  const query = getQuery(params)
+  
 
-  const endpoint = searchParams.size > 0
-    ? `/admin/users?${searchParams.toString()}`
-    : "/admin/users";
-
-  return apiFetchServer<AuthUser[]>(endpoint, {
+  return apiFetchServer<AuthUser[]>(`/admin/users${query? `?${query}` : ""}`, {
     tags: [tags.users],
   });
 }
