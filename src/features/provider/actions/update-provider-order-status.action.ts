@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 
 import { ApiError } from "@/lib/api/errors";
-import { updateProviderOrderStatusServer } from "@/lib/api/provider.server";
+import { updateProviderOrderStatus } from "@/lib/api/provider.server";
 import type { ProviderOrderStatusUpdate } from "@/types/order";
 
 export async function updateProviderOrderStatusAction(
@@ -11,7 +11,7 @@ export async function updateProviderOrderStatusAction(
   status: ProviderOrderStatusUpdate,
 ) {
   try {
-    await updateProviderOrderStatusServer(orderId, status);
+    await updateProviderOrderStatus(orderId, status);
     revalidatePath("/dashboard/providers/orders");
   } catch (error) {
     if (error instanceof ApiError) {

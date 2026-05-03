@@ -48,21 +48,7 @@ export async function updateMealByProvider(id:string,data:UpdateMealPayload){
 
 }
 
-export async function updateProviderOrderStatusServer(
-  id: string,
-  status: ProviderOrderStatusUpdate,
-) {
-  const response = await apiFetchServer<ProviderOrder>(
-    `/provider/orders/${id}/status`,
-    {
-      method: "PATCH",
-      data: { status },
-      cache: "no-store",
-    },
-  );
 
-  return response.data;
-}
 
 export async function deleteProviderMeal(id: string) {
   return apiFetchServer<void>(`/provider/meals/${id}`, {

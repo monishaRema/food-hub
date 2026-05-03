@@ -8,7 +8,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ProviderOrderStatusFlow } from "@/constants";
-import { updateProviderOrderStatusAction } from "@/features/provider/actions/update-provider-order-status-action";
+import { updateProviderOrderStatusAction } from "@/features/provider/actions/update-provider-order-status.action";
 import { ProviderOrderStatusSubmitButton } from "@/features/provider/components/provider-order-status-submit-button";
 import {
   formatCurrency,
