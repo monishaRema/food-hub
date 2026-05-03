@@ -2,12 +2,8 @@
 
 import { ImageIcon, ReceiptText, Salad, Sparkles, Tag, Wallet } from "lucide-react";
 import { useRouter } from "next/navigation";
-
 import { useForm } from "@tanstack/react-form";
 import { toast } from "sonner";
-
-
-import { createProviderMeal } from "@/lib/api/provider";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -32,6 +28,7 @@ import {
   type CreateMealValues,
 } from "@/features/provider/schemas/create-meal-schema";
 import { DietaryTypeArr, MealAvailabilityArr } from "@/constants";
+import { createMealAction } from "../actions/create-meal.action";
 
 const fieldClassName =
   "h-11 border-[#eadfd2] bg-white focus-visible:ring-[#f97316]/20";
@@ -71,7 +68,7 @@ export function CreateMealForm({
       try {
         const parsedValues: CreateMealValues = createMealSchema.parse(value);
 
-        await createProviderMeal({
+        await createMealAction({
           name: parsedValues.name,
           image: parsedValues.image,
           price: parsedValues.price,
@@ -84,7 +81,7 @@ export function CreateMealForm({
         });
 
         toast.success("Meal created successfully", { id: toastId });
-        router.refresh();
+        router.push("/dashboard/provider/meals");
       } catch (error) {
         const message =
           error instanceof Error ? error.message : "Unable to create meal";

@@ -7,7 +7,7 @@ import type { ProviderOrder, ProviderOrderStatusUpdate } from "@/types/order";
 import { ApiFetchResult } from "@/types/api";
 import { QuerySearchType } from "../schema";
 import { getQuery } from "../utils/query";
-import { UpdateMealPayload } from "@/types/providers.type";
+import { CreateMealPayload, UpdateMealPayload } from "@/types/providers.type";
 
 
 export async function getProviderMeals(params: QuerySearchType) {
@@ -67,5 +67,13 @@ export async function updateProviderOrderStatusServer(
 export async function deleteProviderMeal(id: string) {
   return apiFetchServer<void>(`/provider/meals/${id}`, {
     method:"DELETE"
+  });
+}
+
+export async function createProviderMeal(payload: CreateMealPayload) {
+  return apiFetchServer<ApiFetchResult<Meal>>("/provider/meals", {
+    method:"POST",
+    data:payload,
+    cache:"no-store"
   });
 }

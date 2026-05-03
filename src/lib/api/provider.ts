@@ -22,9 +22,7 @@ export async function registerProviderProfile(payload:RegisterProviderPayload){
 }
 
 
-export async function createProviderMeal(payload: CreateMealPayload) {
-  return apiFetch<Meal>("/provider/meals", "POST", payload);
-}
+
 
 
 
