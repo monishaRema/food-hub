@@ -1,10 +1,10 @@
-"use client";
+
 
 import Image from "next/image";
-import Link from "next/link";
+
 
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+
 import {
   Table,
   TableBody,
@@ -15,11 +15,8 @@ import {
 } from "@/components/ui/table";
 import { formatEnumLabel, formatPrice } from "@/lib/utils/format";
 import type { Meal } from "@/types/meal";
-import { deleteProviderMeal } from "@/lib/api/provider";
-import { buildLoginRedirectPath } from "@/lib/auth/login-redirect";
-import { UnauthorizedError } from "@/lib/api/errors";
-import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import MealTableActionButtons from "./Meal-table-action-buttons";
+
 
 function getAvailabilityVariant(availability?: Meal["availability"]) {
   return availability === "AVAILABLE" ? "default" : "outline";
@@ -30,35 +27,9 @@ function getDietaryVariant(dietary?: Meal["dietary"]) {
 }
 
 export default function MealTable({ meals }: { meals: Meal[] }) {
-  const router = useRouter();
 
-  async function handleDeleteMeal(mealId: string) {
-    const confirmed = window.confirm(
-      "Delete meal? This action cannot be undone.",
-    );
 
-    if (!confirmed) {
-      return;
-    }
 
-    const toastId = toast.loading("Deleting meal");
-
-    try {
-      await deleteProviderMeal(mealId);
-      toast.success("Meal deleted successfully", { id: toastId });
-      router.refresh();
-    } catch (err) {
-      if (err instanceof UnauthorizedError) {
-        router.replace(buildLoginRedirectPath("/dashboard/provider/meals"));
-        return;
-      }
-
-      toast.error(
-        err instanceof Error ? err.message : "Unable to delete meal right now.",
-        { id: toastId },
-      );
-    }
-  }
 
   return (
     <div className="overflow-hidden rounded-[28px] border border-[#eadfd2] bg-white shadow-sm">
@@ -151,26 +122,7 @@ export default function MealTable({ meals }: { meals: Meal[] }) {
                 </TableCell>
 
                 <TableCell className="px-6">
-                  <div className="flex flex-wrap justify-end gap-2">
-                    <Button asChild variant="outline" size="sm">
-                      <Link href={`/dashboard/provider/meals/${meal.id}`}>
-                        View
-                      </Link>
-                    </Button>
-                    <Button asChild variant="outline" size="sm">
-                      <Link href={`/dashboard/provider/meals/${meal.id}/edit`}>
-                        Edit
-                      </Link>
-                    </Button>
-                    <Button
-                      type="button"
-                      className="bg-red-700 text-white hover:bg-red-800"
-                      size="sm"
-                      onClick={() => handleDeleteMeal(meal.id)}
-                    >
-                      Delete
-                    </Button>
-                  </div>
+                 <MealTableActionButtons mealId={meal.id}></MealTableActionButtons>
                 </TableCell>
               </TableRow>
             ))

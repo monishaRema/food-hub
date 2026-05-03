@@ -1,3 +1,4 @@
+
 import "server-only";
 
 import { apiFetchServer } from "@/lib/api/apiFetchServer";
@@ -37,7 +38,7 @@ export async function getProviderOrders(params: QuerySearchType) {
 
 export async function updateMealByProvider(id:string,data:UpdateMealPayload){
 
-  const response = await apiFetchServer(`/provider/meals/${id}`,{
+  const response = await apiFetchServer<ApiFetchResult<Meal>>(`/provider/meals/${id}`,{
     method:"PATCH",
     data:data,
     cache:"no-store"
@@ -61,4 +62,10 @@ export async function updateProviderOrderStatusServer(
   );
 
   return response.data;
+}
+
+export async function deleteProviderMeal(id: string) {
+  return apiFetchServer<void>(`/provider/meals/${id}`, {
+    method:"DELETE"
+  });
 }

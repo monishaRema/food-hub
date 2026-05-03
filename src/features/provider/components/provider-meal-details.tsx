@@ -30,7 +30,7 @@ export function ProviderMealDetails({ meal }: { meal: Meal }) {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center gap-3">
         <Button asChild variant="outline" size="sm">
-          <Link href="/dashboard/providers/meals">
+          <Link href="/dashboard/provider/meals">
             <ArrowLeft />
             Back to meals
           </Link>

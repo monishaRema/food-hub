@@ -26,9 +26,7 @@ export async function createProviderMeal(payload: CreateMealPayload) {
   return apiFetch<Meal>("/provider/meals", "POST", payload);
 }
 
-export async function deleteProviderMeal(id: string) {
-  return apiFetch<void>(`/provider/meals/${id}`, "DELETE");
-}
+
 
 
 export async function updateProviderOrderStatus(
