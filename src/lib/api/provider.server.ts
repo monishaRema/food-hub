@@ -6,6 +6,8 @@ import type { ProviderOrder, ProviderOrderStatusUpdate } from "@/types/order";
 import { ApiFetchResult } from "@/types/api";
 import { QuerySearchType } from "../schema";
 import { getQuery } from "../utils/query";
+import { UpdateMealPayload } from "@/types/providers.type";
+
 
 export async function getProviderMeals(params: QuerySearchType) {
 
@@ -31,6 +33,18 @@ export async function getProviderOrders(params: QuerySearchType) {
   );
 
   return response;
+}
+
+export async function updateMealByProvider(id:string,data:UpdateMealPayload){
+
+  const response = await apiFetchServer(`/provider/meals/${id}`,{
+    method:"PATCH",
+    data:data,
+    cache:"no-store"
+  })
+
+  return response
+
 }
 
 export async function updateProviderOrderStatusServer(
