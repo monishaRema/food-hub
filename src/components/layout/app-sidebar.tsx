@@ -53,9 +53,9 @@ function getNavByRole(role?: string): NavGroup[] {
         title: "Provider",
         items: [
            { title: "Dashboard", url: "/dashboard/provider" },
-          { title: "Meals", url: "/dashboard/providers/meals" },
-          { title: "Create Meal", url: "/dashboard/providers/create-meals" },
-          { title: "Orders", url: "/dashboard/providers/orders" },
+          { title: "Meals", url: "/dashboard/provider/meals" },
+          { title: "Create Meal", url: "/dashboard/provider/create-meals" },
+          { title: "Orders", url: "/dashboard/provider/orders" },
            {title:"Home",url:"/"}
         ],
       },
@@ -66,9 +66,9 @@ function getNavByRole(role?: string): NavGroup[] {
     {
       title: "Customer",
       items: [
-        { title: "Dashboard", url: "/dashboard" },
-        { title: "Become Provider", url: "/dashboard/become-provider" },
-        { title: "My Orders", url: "/dashboard/my-orders" },
+        { title: "Dashboard", url: "/dashboard/customer" },
+        { title: "Become Provider", url: "/dashboard/customer/become-provider" },
+        { title: "My Orders", url: "/dashboard/customer/my-orders" },
          {title:"Home",url:"/"}
       ],
     },

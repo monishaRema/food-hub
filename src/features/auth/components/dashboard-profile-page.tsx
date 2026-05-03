@@ -2,11 +2,9 @@ import { DashboardProfile, DashboardProfileError } from "@/features/auth/compone
 import { getCurrentUser } from "@/lib/api/user.server";
 import { redirectIfUnauthorized } from "@/lib/auth/redirect-if-unauthorized";
 
-export async function DashboardProfilePage({
-  nextPath,
-}: {
-  nextPath: string;
-}) {
+export async function DashboardProfilePage(
+ 
+) {
   try {
     const user = await getCurrentUser();
 
@@ -20,7 +18,7 @@ export async function DashboardProfilePage({
 
     return <DashboardProfile user={user} />;
   } catch (error) {
-    redirectIfUnauthorized(error, nextPath);
+   
 
     return (
       <DashboardProfileError
