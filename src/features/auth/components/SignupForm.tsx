@@ -24,6 +24,8 @@ import { useForm } from "@tanstack/react-form";
 import { toast } from "sonner";
 import * as z from "zod";
 import Link from "next/link";
+import { registerAction } from "../action/register.action";
+import { registerFormSchema } from "@/lib/schema/auth.schema";
 
 export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
   interface UserType {
@@ -41,34 +43,14 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
     image: "",
   };
 
-  const formSchema = z.object({
-    name: z.string().trim().min(1, "Name is required"),
 
-    email: z.string().trim().email("Invalid email address"),
-
-    password: z.string().min(6, "Password must be at least 6 characters"),
-
-    phone: z
-      .string()
-      .trim()
-      .regex(/^\d{8}$/, "Phone must be 8 digits")
-      .optional()
-      .or(z.literal("")),
-
-    image: z
-      .string()
-      .trim()
-      .pipe(z.url("Invalid image URL"))
-      .optional()
-      .or(z.literal("")),
-  });
 
   const router = useRouter();
 
   const form = useForm({
     defaultValues: defaultUser,
     validators: {
-      onSubmit: formSchema,
+      onSubmit: registerFormSchema,
     },
     onSubmit: async ({ value }) => {
       const toastId = toast.loading("Creating user");
@@ -86,25 +68,8 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
           payload.image = value.image.trim();
         }
 
-        const res = await fetch(`${env.NEXT_PUBLIC_API_URL}/auth/register`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-          body: JSON.stringify(payload),
-        });
+        await registerAction(payload)
 
-        const result = await res.json();
-
-        if (!res.ok || !result.success) {
-          const errorMessage =
-            result?.errorDetails?.[0]?.message ||
-            result.message ||
-            "Signup failed";
-
-          throw new Error(errorMessage);
-        }
 
         toast.success("User created successfully", { id: toastId });
         router.push("/auth/login");

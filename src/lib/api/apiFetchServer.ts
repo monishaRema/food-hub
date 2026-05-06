@@ -47,7 +47,6 @@ async function parseJson<T>(response: Response): Promise<ApiFetchResult<T>> {
   }
 
   const result = (await response.json()) as Omit<ApiResponse<T>, "res">;
-
   if (!response.ok) {
     const errorDetails = result.errorDetails as ApiErrorDetails[] | undefined;
 
