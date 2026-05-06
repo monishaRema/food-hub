@@ -18,24 +18,16 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { env } from "@/env";
 
 import { useForm } from "@tanstack/react-form";
 import { toast } from "sonner";
-import * as z from "zod";
 import Link from "next/link";
-import { registerAction } from "../action/register.action";
-import { registerFormSchema } from "@/lib/schema/auth.schema";
+import { registerSchema } from "@/lib/schema/auth.schema";
+import { registerUserAction } from "../action/auth.action";
+import type { RegisterUser } from "@/lib/schema/auth.schema";
 
 export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
-  interface UserType {
-    name: string;
-    email: string;
-    password: string;
-    phone?: string;
-    image?: string;
-  }
-  const defaultUser: UserType = {
+  const defaultUser: RegisterUser = {
     name: "",
     email: "",
     password: "",
@@ -43,19 +35,17 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
     image: "",
   };
 
-
-
   const router = useRouter();
 
   const form = useForm({
     defaultValues: defaultUser,
     validators: {
-      onSubmit: registerFormSchema,
+      onSubmit: registerSchema,
     },
     onSubmit: async ({ value }) => {
       const toastId = toast.loading("Creating user");
       try {
-        const payload: UserType = {
+        const payload: RegisterUser = {
           name: value.name.trim(),
           email: value.email.trim(),
           password: value.password.trim(),
@@ -68,8 +58,11 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
           payload.image = value.image.trim();
         }
 
-        await registerAction(payload)
-
+        const user = await registerUserAction(payload);
+        
+        if (!user.data) {
+          throw new Error("Register Failed");
+        }
 
         toast.success("User created successfully", { id: toastId });
         router.push("/auth/login");

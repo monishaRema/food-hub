@@ -18,29 +18,26 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { env } from "@/env";
+
 
 import { useForm } from "@tanstack/react-form";
 import { toast } from "sonner";
-import * as z from "zod";
 import Link from "next/link";
 import { useAuth } from "@/providers/AuthProvider";
+import { loginSchema } from "@/lib/schema/auth.schema";
+import { loginAction } from "../action/auth.action";
+import type { LoginType } from "@/lib/schema/auth.schema";
 
 export function LoginForm({ ...props }: React.ComponentProps<typeof Card>) {
   const router = useRouter();
   const { setUser } = useAuth();
 
-  const loginSchema = z.object({
-    email: z.string().trim().pipe(z.email("Invalid email address")),
-    password: z.string().min(6, "Password must be at least 6 characters"),
-  });
 
-  type LoginType = z.infer<typeof loginSchema>;
 
-  const defaultLogin: LoginType = {
+const defaultLogin: LoginType = {
     email: "",
     password: "",
-  };
+};
 
   const form = useForm({
     defaultValues: defaultLogin,
@@ -58,27 +55,13 @@ export function LoginForm({ ...props }: React.ComponentProps<typeof Card>) {
           password: value.password.trim(),
         };
 
-        const res = await fetch(`${env.NEXT_PUBLIC_API_URL}/auth/login`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-          body: JSON.stringify(payload),
-        });
+       const result = await loginAction(payload)
 
-        const result = await res.json();
-
-        if (!res.ok || !result.success) {
-          const errorMessage =
-            result?.errorDetails?.[0]?.message ||
-            result.message ||
-            "Login failed";
-
-          throw new Error(errorMessage);
-        }
+       if(!result.success || !result.user){
+          return toast.error(result.message, { id: toastId });
+       }
       
-        setUser(result.data);
+        setUser(result.user);
 
         toast.success("Login successful", { id: toastId });
         router.push("/");

@@ -49,7 +49,7 @@ export default function HeroSection() {
           </div>
 
           <div className="image-container relative max-w-3xl min-h-100 rounded-2xl overflow-hidden">
-            <Image loading="eager" src={"/assets/hero-food.jpg"} alt="Burger" fill={true} className="object-contain " >
+            <Image src={"/assets/hero-food.jpg"} alt="Burger" fill={true} className="object-contain " >
 
             </Image>
           </div>

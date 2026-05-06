@@ -15,3 +15,9 @@ export interface AuthUser {
   createdAt?: string;
   updatedAt?: string;
 }
+
+export interface LoggedInUser {
+  user: AuthUser,
+  accessToken: string,
+  refreshToken: string
+}

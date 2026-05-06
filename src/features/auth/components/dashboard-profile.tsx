@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ShieldCheck, UserRound } from "lucide-react";
+import { Mail, Phone, ShieldCheck, UserRound } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -53,7 +53,6 @@ export function DashboardProfile({ user }: { user: AuthUser }) {
               <div className="flex size-28 shrink-0 items-center justify-center overflow-hidden rounded-[28px] border border-white/70 bg-white shadow-sm">
                 {user.image ? (
                   <img
-                    loading="eager"
                     src={user.image}
                     alt={user.name}
                     className="h-full w-full object-cover"
