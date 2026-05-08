@@ -29,6 +29,10 @@ function getApiEndpoint(endpoint: string) {
   return endpoint;
 }
 
+function buildBackendUrl(endpoint: string) {
+  return `${env.API_URL.replace(/\/$/, "")}/${endpoint.replace(/^\/api\//, "")}`;
+}
+
 function buildNextOptions(params: {
   tags?: string[];
   revalidate?: number | false;
@@ -94,6 +98,7 @@ export async function apiFetchServer<T>(
   const apiEndpoint = getApiEndpoint(endpoint);
 
   let cookieHeader = "";
+  const requestHeaders = new Headers();
 
   if (forwardCookies) {
     const cookieStore = await cookies();
@@ -102,13 +107,33 @@ export async function apiFetchServer<T>(
       .getAll()
       .map((cookie) => `${cookie.name}=${cookie.value}`)
       .join("; ");
+
+    const accessToken = cookieStore.get("access-token")?.value;
+    const refreshToken = cookieStore.get("refresh-token")?.value;
+
+    if (cookieHeader) {
+      requestHeaders.set("cookie", cookieHeader);
+    }
+
+    if (accessToken) {
+      requestHeaders.set("authorization", `Bearer ${accessToken}`);
+      requestHeaders.set("access-token", accessToken);
+    }
+
+    if (refreshToken) {
+      requestHeaders.set("refresh-token", refreshToken);
+    }
   }
 
-  const response = await fetch(new URL(apiEndpoint, env.FRONTEND_BASE_URL), {
+  const targetUrl = forwardCookies
+    ? new URL(apiEndpoint, env.FRONTEND_BASE_URL)
+    : buildBackendUrl(apiEndpoint);
+
+  const response = await fetch(targetUrl, {
     method,
     headers: {
+      ...Object.fromEntries(requestHeaders.entries()),
       ...(data !== undefined ? { "Content-Type": "application/json" } : {}),
-      ...(cookieHeader ? { cookie: cookieHeader } : {}),
     },
     ...(data !== undefined ? { body: JSON.stringify(data) } : {}),
     ...(cache ? { cache } : {}),
