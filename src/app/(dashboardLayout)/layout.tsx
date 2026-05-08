@@ -1,7 +1,18 @@
+import type { Metadata } from "next";
+
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { DashboardPageShell } from "@/components/shared/dashboard-page-shell";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { UtensilsCrossed } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Dashboard",
+  description: "Manage your FoodHub account, meals, providers, and orders from the dashboard.",
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 export default function dashboardLayout({
   children,

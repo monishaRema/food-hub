@@ -1,11 +1,34 @@
 import Image from "next/image";
 import Link from "next/link";
+import type { Metadata } from "next";
 import { Store } from "lucide-react";
 
 import PaginationControls from "@/components/shared/pagination-control";
 import { getPublicProviders } from "@/lib/api/publicProvider";
 import { providerQuerySchema } from "@/lib/schema";
+import { normalizeDescription } from "@/lib/seo";
 import type { SearchParamsType } from "@/types";
+
+const providersPageDescription = normalizeDescription(
+  "Discover trusted local kitchens, restaurants, and independent providers serving fresh meals through FoodHub.",
+);
+
+export const metadata: Metadata = {
+  title: "Browse providers",
+  description: providersPageDescription,
+  alternates: {
+    canonical: "/providers",
+  },
+  openGraph: {
+    title: "Browse providers",
+    description: providersPageDescription,
+    url: "/providers",
+  },
+  twitter: {
+    title: "Browse providers",
+    description: providersPageDescription,
+  },
+};
 
 export default async function ProvidersPage({
   searchParams,

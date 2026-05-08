@@ -1,4 +1,15 @@
+import type { Metadata } from "next";
+
 import { CartPageClient } from "@/features/orders/components/CartPageClient";
+
+export const metadata: Metadata = {
+  title: "Your cart",
+  description: "Review the meals in your FoodHub cart before placing an order.",
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 export default function CartPage() {
   return (

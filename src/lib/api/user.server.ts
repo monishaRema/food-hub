@@ -14,5 +14,6 @@ export async function getUsers(params: QuerySearchType) {
 
   return apiFetchServer<AuthUser[]>(`/api/admin/users${query? `?${query}` : ""}`, {
     tags: [tags.users],
+    forwardCookies: true,
   });
 }

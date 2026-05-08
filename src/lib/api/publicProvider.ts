@@ -1,4 +1,5 @@
 import { apiFetchServer } from "./apiFetchServer";
+import { revalidateInSeconds, tags } from "@/constants/cache";
 
 import type { ApiFetchResult} from "@/types/api";
 import { GetMealsParams, Meal } from "@/types/meal";
@@ -36,8 +37,8 @@ export async function getPublicProviders(params: GetProvidersParams = {}) {
   const response = await apiFetchServer<Provider[]>(
     `/api/providers${query ? `?${query}` : ""}`,
     {
-      revalidate: 60,
-      tags: ["providers"],
+      revalidate: revalidateInSeconds.catalog,
+      tags: [tags.providers],
     },
   );
 
@@ -85,8 +86,8 @@ export async function getMealsByProvider(id:string, params: GetMealsParams = {})
   const response = await apiFetchServer<Meal[]>(
    `/api/providers/${id}/meals${query ? `?${query}` : ""}`,
     {
-      revalidate: 60,
-      tags: ["meals"],
+      revalidate: revalidateInSeconds.catalog,
+      tags: [tags.providerMeals, tags.meals],
     }
   );
 

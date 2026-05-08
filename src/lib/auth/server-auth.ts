@@ -13,6 +13,7 @@ export const getCurrentUser = cache(async (): Promise<AuthUser | null> => {
   try {
     const response = await apiFetchServer<AuthUser>("/api/auth/me", {
       cache: "no-store",
+      forwardCookies: true,
     });
 
     return response.data ?? null;

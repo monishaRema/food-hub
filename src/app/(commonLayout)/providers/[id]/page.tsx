@@ -1,5 +1,7 @@
+import { cache } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { MapPin, Store } from "lucide-react";
 
@@ -7,6 +9,7 @@ import PaginationControls from "@/components/shared/pagination-control";
 import { Badge } from "@/components/ui/badge";
 import { MealList } from "@/features/meals/components/MealList";
 import { isApiError } from "@/lib/api/errors";
+import { DEFAULT_SITE_DESCRIPTION, normalizeDescription, toAbsoluteImageUrl } from "@/lib/seo";
 import { mealPageQuerySchema } from "@/lib/schema";
 import {
   getMealsByProvider,
@@ -15,6 +18,52 @@ import {
 import type { ParamsIdType, SearchParamsType } from "@/types";
 
 type ProviderSinglePageProps = ParamsIdType & SearchParamsType;
+
+const getProviderForPage = cache(async (id: string) => getSingleProvider(id));
+
+export async function generateMetadata({
+  params,
+}: ParamsIdType): Promise<Metadata> {
+  const { id } = await params;
+
+  try {
+    const provider = await getProviderForPage(id);
+    const description = normalizeDescription(
+      `Browse meals from ${provider.shopName} on FoodHub. ${provider.address}`,
+      DEFAULT_SITE_DESCRIPTION,
+    );
+    const image = toAbsoluteImageUrl(provider.shopImage);
+
+    return {
+      title: provider.shopName,
+      description,
+      alternates: {
+        canonical: `/providers/${provider.id}`,
+      },
+      openGraph: {
+        title: provider.shopName,
+        description,
+        url: `/providers/${provider.id}`,
+        type: "website",
+        images: image ? [{ url: image, alt: provider.shopName }] : undefined,
+      },
+      twitter: {
+        title: provider.shopName,
+        description,
+        images: image ? [image] : undefined,
+      },
+    };
+  } catch {
+    return {
+      title: "Provider not found",
+      description: DEFAULT_SITE_DESCRIPTION,
+      robots: {
+        index: false,
+        follow: false,
+      },
+    };
+  }
+}
 
 export default async function ProviderSinglePage({
   params,
@@ -26,7 +75,7 @@ export default async function ProviderSinglePage({
 
   try {
     const [provider, meals] = await Promise.all([
-      getSingleProvider(id),
+      getProviderForPage(id),
       getMealsByProvider(id, query),
     ]);
 

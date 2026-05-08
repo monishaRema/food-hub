@@ -1,9 +1,27 @@
+import type { Metadata } from "next";
+
 import FeaturedSection from "@/features/home/featured";
 import HeroSection from "@/features/home/hero";
 import HighlightSection from "@/features/home/highlights";
-
-
 import { getFeaturedMeal } from "@/lib/api/meals.api";
+import { DEFAULT_SITE_DESCRIPTION } from "@/lib/seo";
+
+export const metadata: Metadata = {
+  title: "Discover local meals and trusted food providers",
+  description: DEFAULT_SITE_DESCRIPTION,
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    title: "Discover local meals and trusted food providers",
+    description: DEFAULT_SITE_DESCRIPTION,
+    url: "/",
+  },
+  twitter: {
+    title: "Discover local meals and trusted food providers",
+    description: DEFAULT_SITE_DESCRIPTION,
+  },
+};
 
 export default async function Home() {
   const featuredMeals = await getFeaturedMeal({ page: "1", limit: "4" });

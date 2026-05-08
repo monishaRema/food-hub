@@ -1,5 +1,7 @@
+import { cache } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Star } from "lucide-react";
 
@@ -10,17 +12,59 @@ import { Button } from "@/components/ui/button";
 import { isApiError, isUnauthorizedError } from "@/lib/api/errors";
 import { AddToCartButton } from "@/features/orders/components/AddToCartButton";
 import { checkReviewEligibility, getSingleMeal } from "@/lib/api/meals.api";
+import { DEFAULT_SITE_DESCRIPTION, normalizeDescription, toAbsoluteImageUrl } from "@/lib/seo";
 import { formatDate, formatEnumLabel, formatPrice } from "@/lib/utils/format";
 import { ParamsIdType } from "@/types";
 import { ReviewForm } from "@/features/meals/components/ReviewForm";
 
-export default async function MealSinglePage({
+const getMealForPage = cache(async (id: string) => getSingleMeal(id));
+
+export async function generateMetadata({
   params,
-}: ParamsIdType) {
+}: ParamsIdType): Promise<Metadata> {
   const { id } = await params;
 
   try {
-    const meal = await getSingleMeal(id);
+    const meal = await getMealForPage(id);
+    const description = normalizeDescription(meal.excerpt, DEFAULT_SITE_DESCRIPTION);
+    const image = toAbsoluteImageUrl(meal.image);
+
+    return {
+      title: meal.name,
+      description,
+      alternates: {
+        canonical: `/meals/${meal.id}`,
+      },
+      openGraph: {
+        title: meal.name,
+        description,
+        url: `/meals/${meal.id}`,
+        type: "article",
+        images: image ? [{ url: image, alt: meal.name }] : undefined,
+      },
+      twitter: {
+        title: meal.name,
+        description,
+        images: image ? [image] : undefined,
+      },
+    };
+  } catch {
+    return {
+      title: "Meal not found",
+      description: DEFAULT_SITE_DESCRIPTION,
+      robots: {
+        index: false,
+        follow: false,
+      },
+    };
+  }
+}
+
+export default async function MealSinglePage({ params }: ParamsIdType) {
+  const { id } = await params;
+
+  try {
+    const meal = await getMealForPage(id);
     let reviewEligibility: Awaited<ReturnType<typeof checkReviewEligibility>> | null = null;
 
     try {

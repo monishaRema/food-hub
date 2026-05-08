@@ -16,6 +16,7 @@ export async function createOrder(payload: CreateOrderType) {
     method: "POST",
     data: payload,
     cache: "no-store",
+    forwardCookies: true,
   });
 
   return response.data;
@@ -44,12 +45,14 @@ export async function getOrdersByUser(query: GetOrdersByUserQuery = {}) {
 
   return apiFetchServer<CustomerOrder[]>(endpoint, {
     cache: "no-store",
+    forwardCookies: true,
   });
 }
 
 export async function getSingleOrder(id: string) {
   const response = await apiFetchServer<CustomerOrderDetails>(`/api/orders/${id}`, {
     cache: "no-store",
+    forwardCookies: true,
   });
   return response.data;
 }
@@ -60,6 +63,7 @@ export async function cancelOrder(id: string) {
     {
       method: "PATCH",
       cache: "no-store",
+      forwardCookies: true,
     },
   );
 
@@ -72,6 +76,7 @@ export async function getAdminOrders(params: QuerySearchType) {
     `/api/admin/orders${query ? `?${query}` : ""}`,
     {
       cache: "no-store",
+      forwardCookies: true,
     },
   );
 
@@ -82,6 +87,7 @@ export async function getAdminSingleOrders(id: string) {
     `/api/admin/orders/${id}`,
     {
       cache: "no-store",
+      forwardCookies: true,
     },
   );
 

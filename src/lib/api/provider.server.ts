@@ -14,12 +14,14 @@ export async function getProviderMeals(params: QuerySearchType) {
   const query = getQuery(params)
   return apiFetchServer<Meal[]>(`/api/provider/meals${query? `?${query}`: ""}`, {
     cache: "no-store",
+    forwardCookies: true,
   });
 }
 
 export async function getProviderMealById(id: string) {
   const response = await apiFetchServer<Meal>(`/api/provider/meals/${id}`, {
     cache: "no-store",
+    forwardCookies: true,
   });
 
   if (!response.data) {
@@ -35,6 +37,7 @@ export async function getProviderOrders(params: QuerySearchType) {
     `/api/provider/orders${query ? `?${query}` : ""}`,
     {
       cache: "no-store",
+      forwardCookies: true,
     },
   );
 
@@ -46,7 +49,8 @@ export async function updateMealByProvider(id:string,data:UpdateMealPayload){
   const response = await apiFetchServer<Meal>(`/api/provider/meals/${id}`,{
     method:"PATCH",
     data:data,
-    cache:"no-store"
+    cache:"no-store",
+    forwardCookies: true,
   })
 
   return response
@@ -57,7 +61,8 @@ export async function updateMealByProvider(id:string,data:UpdateMealPayload){
 
 export async function deleteProviderMeal(id: string) {
   return apiFetchServer<void>(`/api/provider/meals/${id}`, {
-    method:"DELETE"
+    method:"DELETE",
+    forwardCookies: true,
   });
 }
 
@@ -65,7 +70,8 @@ export async function createProviderMeal(payload: CreateMealPayload) {
   return apiFetchServer<Meal>("/api/provider/meals", {
     method:"POST",
     data:payload,
-    cache:"no-store"
+    cache:"no-store",
+    forwardCookies: true,
   });
 }
 
@@ -74,7 +80,8 @@ export async function registerProviderProfile(payload:RegisterProviderPayload){
   return apiFetchServer("/api/provider/profile",{
     method:"POST",
     data:payload,
-    cache:"no-store"
+    cache:"no-store",
+    forwardCookies: true,
   })
 }
 
@@ -87,6 +94,7 @@ export async function updateProviderOrderStatus(
   return apiFetchServer<ProviderOrder>(`/api/provider/orders/${id}/status`, {
     method:"PATCH", 
     data:{status},
-    cache:"no-store"
+    cache:"no-store",
+    forwardCookies: true,
   });
 }

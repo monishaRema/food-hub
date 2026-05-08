@@ -1,9 +1,35 @@
+import type { Metadata } from "next";
+
 import PaginationControls from "@/components/shared/pagination-control";
 import { MealList } from "@/features/meals/components/MealList";
 import MealsHero from "@/features/meals/components/MealsHero";
 import { getMeals } from "@/lib/api/meals.api";
 import { SearchParamsType } from "@/types";
 import { mealPageQuerySchema } from "@/lib/schema";
+import { normalizeDescription } from "@/lib/seo";
+
+export const metadata: Metadata = {
+  title: "Browse meals",
+  description: normalizeDescription(
+    "Browse featured dishes, everyday favorites, and fresh meal options from FoodHub providers.",
+  ),
+  alternates: {
+    canonical: "/meals",
+  },
+  openGraph: {
+    title: "Browse meals",
+    description: normalizeDescription(
+      "Browse featured dishes, everyday favorites, and fresh meal options from FoodHub providers.",
+    ),
+    url: "/meals",
+  },
+  twitter: {
+    title: "Browse meals",
+    description: normalizeDescription(
+      "Browse featured dishes, everyday favorites, and fresh meal options from FoodHub providers.",
+    ),
+  },
+};
 
 export default async function MealPage({ searchParams }: SearchParamsType) {
   const rawSearchParams = await searchParams;

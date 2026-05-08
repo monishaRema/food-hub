@@ -1,4 +1,5 @@
 import { apiFetchServer } from "@/lib/api/apiFetchServer";
+import { revalidateInSeconds, tags } from "@/constants/cache";
 import type { ApiFetchResult, PaginatedPayload } from "@/types/api";
 import type {
   CreateReviewType,
@@ -32,8 +33,8 @@ export async function getMeals(params: GetMealsParams = {}) {
   const response = await apiFetchServer<PaginatedPayload<Meal[]>>(
     `/api/meals${query ? `?${query}` : ""}`,
     {
-      revalidate: 60,
-      tags: ["meals"],
+      revalidate: revalidateInSeconds.catalog,
+      tags: [tags.meals],
     }
   );
 
@@ -48,6 +49,10 @@ export async function getFeaturedMeal(params?: Record<string, string>) {
 
   const response = await apiFetchServer<FeaturedMeal[]>(
     `/api/meals/featured${query}`,
+    {
+      revalidate: revalidateInSeconds.catalog,
+      tags: [tags.featuredMeals, tags.meals],
+    },
   );
 
   return response.data ?? [];
@@ -69,7 +74,8 @@ export async function getSingleMeal(id: string) {
 export async function createReview(data: CreateReviewType){
    const response = await apiFetchServer(`/api/reviews`, {
     method: "POST",
-    data: data
+    data: data,
+    forwardCookies: true,
   });
 
 
@@ -80,6 +86,7 @@ export async function createReview(data: CreateReviewType){
 export async function checkReviewEligibility(mealId: string){
   const response = await apiFetchServer<ReviewEligibility>(`/api/reviews/eligibility/${mealId}`, {
     cache: "no-store",
+    forwardCookies: true,
   });
   return response.data;
 }

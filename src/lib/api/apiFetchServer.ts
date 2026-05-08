@@ -16,6 +16,7 @@ type ServerApiFetchOptions = {
   cache?: RequestCache;
   tags?: string[];
   revalidate?: number | false;
+  forwardCookies?: boolean;
 };
 
 function getApiEndpoint(endpoint: string) {
@@ -82,15 +83,26 @@ export async function apiFetchServer<T>(
   endpoint: string,
   options: ServerApiFetchOptions = {},
 ): Promise<ApiFetchResult<T>> {
-  const { method = "GET", data, cache, tags, revalidate } = options;
+  const {
+    method = "GET",
+    data,
+    cache,
+    tags,
+    revalidate,
+    forwardCookies = false,
+  } = options;
   const apiEndpoint = getApiEndpoint(endpoint);
 
-  const cookieStore = await cookies();
+  let cookieHeader = "";
 
-  const cookieHeader = cookieStore
-    .getAll()
-    .map((cookie) => `${cookie.name}=${cookie.value}`)
-    .join("; ");
+  if (forwardCookies) {
+    const cookieStore = await cookies();
+
+    cookieHeader = cookieStore
+      .getAll()
+      .map((cookie) => `${cookie.name}=${cookie.value}`)
+      .join("; ");
+  }
 
   const response = await fetch(new URL(apiEndpoint, env.FRONTEND_BASE_URL), {
     method,

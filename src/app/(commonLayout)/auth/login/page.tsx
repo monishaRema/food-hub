@@ -1,4 +1,15 @@
+import type { Metadata } from "next";
+
 import { LoginForm } from "@/features/auth/components/LoginForm";
+
+export const metadata: Metadata = {
+  title: "Log in",
+  description: "Log in to your FoodHub account to manage orders, providers, and dashboard tools.",
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 export default function loginPage() {
     return (
