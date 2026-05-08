@@ -18,6 +18,16 @@ type ServerApiFetchOptions = {
   revalidate?: number | false;
 };
 
+function getApiEndpoint(endpoint: string) {
+  if (!endpoint.startsWith("/api/")) {
+    throw new Error(
+      `apiFetchServer expected an /api/* endpoint, received "${endpoint}".`,
+    );
+  }
+
+  return endpoint;
+}
+
 function buildNextOptions(params: {
   tags?: string[];
   revalidate?: number | false;
@@ -73,14 +83,20 @@ export async function apiFetchServer<T>(
   options: ServerApiFetchOptions = {},
 ): Promise<ApiFetchResult<T>> {
   const { method = "GET", data, cache, tags, revalidate } = options;
-  const cookieStore = await cookies();
-  const cookieHeader = cookieStore.toString();
+  const apiEndpoint = getApiEndpoint(endpoint);
 
-  const response = await fetch(`${env.API_URL}${endpoint}`, {
+  const cookieStore = await cookies();
+
+  const cookieHeader = cookieStore
+    .getAll()
+    .map((cookie) => `${cookie.name}=${cookie.value}`)
+    .join("; ");
+
+  const response = await fetch(new URL(apiEndpoint, env.FRONTEND_BASE_URL), {
     method,
     headers: {
-      "Content-Type": "application/json",
-      ...(cookieHeader ? { Cookie: cookieHeader } : {}),
+      ...(data !== undefined ? { "Content-Type": "application/json" } : {}),
+      ...(cookieHeader ? { cookie: cookieHeader } : {}),
     },
     ...(data !== undefined ? { body: JSON.stringify(data) } : {}),
     ...(cache ? { cache } : {}),

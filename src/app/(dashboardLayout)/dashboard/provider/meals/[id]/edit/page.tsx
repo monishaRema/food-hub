@@ -18,14 +18,14 @@ export default async function EditProviderMealPage({ params }: ParamsIdType) {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center gap-3">
         <Button asChild variant="outline" size="sm">
-          <Link href={`/dashboard/provider/meals/${meal.data?.id}`}>
+          <Link href={`/dashboard/provider/meals/${meal.id}`}>
             <ArrowLeft />
             Back to meal
           </Link>
         </Button>
       </div>
 
-      <EditMealForm meal={meal.data} categories={categories} />
+      <EditMealForm meal={meal} categories={categories} />
     </div>
   );
 }

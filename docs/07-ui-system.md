@@ -62,6 +62,7 @@ These backend states should have consistent UI labels and styling:
 - show field-level errors from `errorDetails`
 - preserve submitted values on failure
 - avoid inventing fields the backend does not support
+- treat session-expired responses as a first-class UX state for protected actions
 
 Examples:
 
@@ -84,6 +85,12 @@ Later additions can include:
 - account menu when authenticated
 - provider dashboard shortcut
 - admin shortcut for admins
+
+## Auth Feedback
+
+- protected actions should handle expired sessions gracefully
+- a user sent back to login should keep an intended `next` destination when possible
+- auth banners, toasts, or inline messages should explain whether the user needs to log in again versus whether they simply lack permission
 
 ## Accessibility Baseline
 

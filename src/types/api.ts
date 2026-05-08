@@ -11,8 +11,17 @@ export interface Meta {
 }
 
 export interface ApiResponse<T> {
-  res: Response;
-  statusCode: number;
+  success: boolean;
+  message: string;
+  data?: T;
+  meta?: Meta;
+  errorDetails?: ApiErrorDetail[];
+  res?: Response;
+  statusCode?: number;
+}
+
+export interface ApiEnvelope<T> {
+  success: boolean;
   message: string;
   data?: T;
   meta?: Meta;

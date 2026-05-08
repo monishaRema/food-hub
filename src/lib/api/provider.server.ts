@@ -4,7 +4,6 @@ import "server-only";
 import { apiFetchServer } from "@/lib/api/apiFetchServer";
 import type { Meal } from "@/types/meal";
 import type { ProviderOrder, ProviderOrderStatusUpdate } from "@/types/order";
-import { ApiFetchResult } from "@/types/api";
 import { QuerySearchType } from "../schema";
 import { getQuery } from "../utils/query";
 import { CreateMealPayload, RegisterProviderPayload, UpdateMealPayload } from "@/types/providers.type";
@@ -13,21 +12,27 @@ import { CreateMealPayload, RegisterProviderPayload, UpdateMealPayload } from "@
 export async function getProviderMeals(params: QuerySearchType) {
 
   const query = getQuery(params)
-  return apiFetchServer<ApiFetchResult<Meal>>(`/provider/meals${query? `?${query}`: ""}`, {
+  return apiFetchServer<Meal[]>(`/api/provider/meals${query? `?${query}`: ""}`, {
     cache: "no-store",
   });
 }
 
 export async function getProviderMealById(id: string) {
-  return apiFetchServer<Meal>(`/provider/meals/${id}`, {
+  const response = await apiFetchServer<Meal>(`/api/provider/meals/${id}`, {
     cache: "no-store",
   });
+
+  if (!response.data) {
+    throw new Error("Meal not found.");
+  }
+
+  return response.data;
 }
 
 export async function getProviderOrders(params: QuerySearchType) {
   const query = getQuery(params);
-  const response = await apiFetchServer<ApiFetchResult<ProviderOrder>>(
-    `/provider/orders${query ? `?${query}` : ""}`,
+  const response = await apiFetchServer<ProviderOrder[]>(
+    `/api/provider/orders${query ? `?${query}` : ""}`,
     {
       cache: "no-store",
     },
@@ -38,7 +43,7 @@ export async function getProviderOrders(params: QuerySearchType) {
 
 export async function updateMealByProvider(id:string,data:UpdateMealPayload){
 
-  const response = await apiFetchServer<ApiFetchResult<Meal>>(`/provider/meals/${id}`,{
+  const response = await apiFetchServer<Meal>(`/api/provider/meals/${id}`,{
     method:"PATCH",
     data:data,
     cache:"no-store"
@@ -51,13 +56,13 @@ export async function updateMealByProvider(id:string,data:UpdateMealPayload){
 
 
 export async function deleteProviderMeal(id: string) {
-  return apiFetchServer<void>(`/provider/meals/${id}`, {
+  return apiFetchServer<void>(`/api/provider/meals/${id}`, {
     method:"DELETE"
   });
 }
 
 export async function createProviderMeal(payload: CreateMealPayload) {
-  return apiFetchServer<ApiFetchResult<Meal>>("/provider/meals", {
+  return apiFetchServer<Meal>("/api/provider/meals", {
     method:"POST",
     data:payload,
     cache:"no-store"
@@ -66,7 +71,7 @@ export async function createProviderMeal(payload: CreateMealPayload) {
 
 
 export async function registerProviderProfile(payload:RegisterProviderPayload){
-  return apiFetchServer("/provider/profile",{
+  return apiFetchServer("/api/provider/profile",{
     method:"POST",
     data:payload,
     cache:"no-store"
@@ -79,7 +84,7 @@ export async function updateProviderOrderStatus(
 ) {
 
 
-  return apiFetchServer<ProviderOrder>(`/provider/orders/${id}/status`, {
+  return apiFetchServer<ProviderOrder>(`/api/provider/orders/${id}/status`, {
     method:"PATCH", 
     data:{status},
     cache:"no-store"

@@ -56,9 +56,20 @@ The frontend serves four user contexts:
 ## Important Current Backend Realities
 
 - base path is `/api`, not `/api/v1`
-- auth is cookie-based, not bearer-token based
+- auth is cookie-first, but some protected backend reads may still expect the access token to be forwarded in a header path
 - public provider detail does not currently include a provider meal list
 - `GET /api/orders` may currently return `401` for a user with no orders
+
+## Current Frontend Auth Transport
+
+The frontend now uses a same-origin Next proxy for protected and auth-aware requests.
+
+```txt
+client -> /api/* -> Next route handler -> backend /api/*
+server -> apiFetchServer("/api/*") -> Next route handler -> backend /api/*
+```
+
+This matters because token refresh and retry now happen in one place instead of being reimplemented in each caller.
 
 These are not just implementation details. They should influence page design, empty states, and integration code.
 

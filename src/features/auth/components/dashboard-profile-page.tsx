@@ -1,6 +1,5 @@
 import { DashboardProfile, DashboardProfileError } from "@/features/auth/components/dashboard-profile";
-import { getCurrentUser } from "@/lib/api/user.server";
-import { redirectIfUnauthorized } from "@/lib/auth/redirect-if-unauthorized";
+import { getCurrentUser } from "@/lib/auth/server-auth";
 
 export async function DashboardProfilePage(
  

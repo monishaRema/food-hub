@@ -1,8 +1,5 @@
-import { DashboardPageShell } from "@/components/shared/dashboard-page-shell";
 import PaginationControls from "@/components/shared/pagination-control";
-import { getAdminOrdersAction } from "@/features/orders/actions/admin-orders.action";
 import { AdminOrdersTable } from "@/features/orders/components/AdminOrderTable";
-import { ProviderOrdersTable } from "@/features/provider/components/provider-orders-table";
 import { isApiError } from "@/lib/api/errors";
 import { getAdminOrders } from "@/lib/api/orders.server";
 import { redirectIfUnauthorized } from "@/lib/auth/redirect-if-unauthorized";
@@ -16,19 +13,19 @@ export default async function AdminOrdersPage({searchParams}:SearchParamsType) {
   const query = querySearchSchema.parse(rawQuery)
   
 try {
-    const orders = await getAdminOrdersAction(query);
+    const orders = await getAdminOrders(query);
 
    
     return (
       <section className="py-10">
         <div className="container mx-auto px-6">
-          <AdminOrdersTable orders={orders.data || []} />
+          <AdminOrdersTable orders={orders.data ?? []} />
           {orders.meta ? <PaginationControls meta={orders.meta} /> : null}
         </div>
       </section>
     );
   } catch (error) {
-    redirectIfUnauthorized(error, "/dashboard/provider/orders");
+    redirectIfUnauthorized(error, "/dashboard/admin/orders");
 
     if (isApiError(error)) {
       return (

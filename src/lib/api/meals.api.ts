@@ -30,7 +30,7 @@ export async function getMeals(params: GetMealsParams = {}) {
   const query = searchParams.toString();
 
   const response = await apiFetchServer<PaginatedPayload<Meal[]>>(
-    `/meals${query ? `?${query}` : ""}`,
+    `/api/meals${query ? `?${query}` : ""}`,
     {
       revalidate: 60,
       tags: ["meals"],
@@ -47,14 +47,14 @@ export async function getFeaturedMeal(params?: Record<string, string>) {
   const query = params ? `?${new URLSearchParams(params).toString()}` : "";
 
   const response = await apiFetchServer<FeaturedMeal[]>(
-    `/meals/featured${query}`,
+    `/api/meals/featured${query}`,
   );
 
   return response.data ?? [];
 }
 
 export async function getSingleMeal(id: string) {
-  const response = await apiFetchServer<SingleMeal>(`/meals/${id}`, {
+  const response = await apiFetchServer<SingleMeal>(`/api/meals/${id}`, {
     cache: "no-store",
   });
 
@@ -67,7 +67,7 @@ export async function getSingleMeal(id: string) {
 
 
 export async function createReview(data: CreateReviewType){
-   const response = await apiFetchServer(`/reviews`, {
+   const response = await apiFetchServer(`/api/reviews`, {
     method: "POST",
     data: data
   });
@@ -78,7 +78,7 @@ export async function createReview(data: CreateReviewType){
 
 
 export async function checkReviewEligibility(mealId: string){
-  const response = await apiFetchServer<ReviewEligibility>(`/reviews/eligibility/${mealId}`, {
+  const response = await apiFetchServer<ReviewEligibility>(`/api/reviews/eligibility/${mealId}`, {
     cache: "no-store",
   });
   return response.data;

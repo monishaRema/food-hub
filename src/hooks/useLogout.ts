@@ -2,7 +2,6 @@
 
 import { useAuth } from "@/providers/AuthProvider";
 import { useRouter } from "next/navigation";
-import { env } from "@/env";
 import { toast } from "sonner";
 
 export function useLogout() {
@@ -13,7 +12,7 @@ export function useLogout() {
     const toastId = toast.loading("Logging out");
 
     try {
-      const res = await fetch(`${env.NEXT_PUBLIC_API_URL}/auth/logout`, {
+      const res = await fetch("/api/auth/logout", {
         method: "POST",
         credentials: "include",
       });

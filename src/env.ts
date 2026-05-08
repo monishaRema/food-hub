@@ -6,6 +6,7 @@ export const env = createEnv({
     BACKEND_BASE_URL: z.url(),
     FRONTEND_BASE_URL: z.url(),
     API_URL: z.url(),
+    NODE_ENV:z.string()
   },
 
   client: {
@@ -17,6 +18,7 @@ export const env = createEnv({
     BACKEND_BASE_URL: process.env.BACKEND_BASE_URL,
     FRONTEND_BASE_URL: process.env.FRONTEND_BASE_URL,
     API_URL: process.env.API_URL,
+    NODE_ENV:process.env.NODE_ENV,
 
     NEXT_PUBLIC_BASE_URL: process.env.NEXT_PUBLIC_BASE_URL,
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,

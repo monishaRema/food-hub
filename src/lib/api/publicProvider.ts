@@ -34,7 +34,7 @@ export async function getPublicProviders(params: GetProvidersParams = {}) {
   const query = searchParams.toString();
 
   const response = await apiFetchServer<Provider[]>(
-    `/providers${query ? `?${query}` : ""}`,
+    `/api/providers${query ? `?${query}` : ""}`,
     {
       revalidate: 60,
       tags: ["providers"],
@@ -48,7 +48,7 @@ export async function getPublicProviders(params: GetProvidersParams = {}) {
 }
 
 export async function getSingleProvider(id: string) {
-  const response = await apiFetchServer<ProviderData>(`/providers/${id}`, {
+  const response = await apiFetchServer<ProviderData>(`/api/providers/${id}`, {
     cache: "no-store",
   });
 
@@ -83,7 +83,7 @@ export async function getMealsByProvider(id:string, params: GetMealsParams = {})
   const query = searchParams.toString();
 
   const response = await apiFetchServer<Meal[]>(
-   `/providers/${id}/meals${query ? `?${query}` : ""}`,
+   `/api/providers/${id}/meals${query ? `?${query}` : ""}`,
     {
       revalidate: 60,
       tags: ["meals"],

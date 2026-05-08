@@ -1,7 +1,12 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
-import { env } from "@/env";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useEffectEvent,
+  useState,
+} from "react";
 import type { AuthUser } from "@/types/user";
 
 type AuthContextValue = {
@@ -18,32 +23,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const refetchUser = async () => {
+  const refetchUser = useEffectEvent(async () => {
     setIsLoading(true);
 
     try {
-      let res = await fetch(`${env.NEXT_PUBLIC_API_URL}/auth/me`, {
+      const res = await fetch("/api/auth/me", {
         credentials: "include",
       });
-
-      if (res.status === 401) {
-        const refreshRes = await fetch(
-          `${env.NEXT_PUBLIC_API_URL}/auth/refresh-token`,
-          {
-            method: "POST",
-            credentials: "include",
-          },
-        );
-
-        if (!refreshRes.ok) {
-          setUser(null);
-          return;
-        }
-
-        res = await fetch(`${env.NEXT_PUBLIC_API_URL}/auth/me`, {
-          credentials: "include",
-        });
-      }
 
       const result = await res.json();
 
@@ -52,16 +38,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return;
       }
 
-      setUser(result.data)
+      setUser(result.data);
     } catch {
       setUser(null);
     } finally {
       setIsLoading(false);
     }
-  };
+  });
 
   useEffect(() => {
-    refetchUser();
+    void refetchUser();
   }, []);
 
   return (

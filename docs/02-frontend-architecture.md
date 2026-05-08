@@ -57,12 +57,15 @@ This project is using Next.js App Router, so these rules matter:
 - request helpers
 - response parsing
 - domain API functions
+- same-origin server fetch utilities for `/api/*`
+- centralized refresh-and-retry handling through Next route handlers
 
 ### `src/lib/auth`
 
 - session lookup
 - role guards
 - cookie-aware server helpers
+- dashboard redirect helpers
 
 ### `src/types`
 
@@ -90,10 +93,17 @@ This project is using Next.js App Router, so these rules matter:
 ## Suggested Request Flow
 
 ```txt
-Page/Layout -> feature loader or API helper -> backend -> normalized result -> UI
+Page/Layout -> feature loader or API helper -> Next /api proxy -> backend -> normalized result -> UI
 ```
 
 Mutations should flow through thin action helpers rather than being embedded directly across page files.
+
+For protected requests, the proxy is responsible for:
+
+- forwarding cookies and token headers
+- handling `401` access-token failures
+- calling backend `/auth/refresh-token`
+- retrying the original backend request after refresh
 
 ## Separation Rules
 

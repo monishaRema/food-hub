@@ -7,8 +7,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { updateProviderOrderStatusAction } from "@/features/provider/actions/update-provider-order-status.action";
-import { ProviderOrderStatusSubmitButton } from "@/features/provider/components/provider-order-status-submit-button";
 import {
   formatCurrency,
   formatDateTime,
@@ -16,9 +14,8 @@ import {
   formatEnumLabel,
 } from "@/lib/utils/format";
 import type {
-  ProviderOrder,
+  AdminOrder,
   ProviderOrderStatus,
-
 } from "@/types/order";
 
 function getStatusVariant(status?: ProviderOrderStatus) {
@@ -37,19 +34,19 @@ function getStatusVariant(status?: ProviderOrderStatus) {
   return "secondary";
 }
 
-function getCustomerLabel(order: ProviderOrder) {
+function getCustomerLabel(order: AdminOrder) {
   return order.user?.name || order.user?.email || "Unknown customer";
 }
 
 
-function getItemCount(order: ProviderOrder) {
+function getItemCount(order: AdminOrder) {
   return order.orderItems.reduce((total, item) => total + item.quantity, 0);
 }
 
 
 
 
-export function AdminOrdersTable({ orders }: { orders: ProviderOrder[] }) {
+export function AdminOrdersTable({ orders }: { orders: AdminOrder[] }) {
   return (
     <div className="overflow-hidden rounded-[28px] border border-[#eadfd2] bg-white shadow-sm">
       <div className="border-b border-[#f1e5d7] px-6 py-5">

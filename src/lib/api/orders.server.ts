@@ -10,10 +10,9 @@ import type {
 } from "@/types/order";
 import { getQuery } from "../utils/query";
 import { QuerySearchType } from "../schema";
-import { ApiFetchResult } from "@/types/api";
 
 export async function createOrder(payload: CreateOrderType) {
-  const response = await apiFetchServer<OrderCreateResponse>("/orders", {
+  const response = await apiFetchServer<OrderCreateResponse>("/api/orders", {
     method: "POST",
     data: payload,
     cache: "no-store",
@@ -39,7 +38,9 @@ export async function getOrdersByUser(query: GetOrdersByUserQuery = {}) {
   }
 
   const endpoint =
-    searchParams.size > 0 ? `/orders?${searchParams.toString()}` : "/orders";
+    searchParams.size > 0
+      ? `/api/orders?${searchParams.toString()}`
+      : "/api/orders";
 
   return apiFetchServer<CustomerOrder[]>(endpoint, {
     cache: "no-store",
@@ -47,7 +48,7 @@ export async function getOrdersByUser(query: GetOrdersByUserQuery = {}) {
 }
 
 export async function getSingleOrder(id: string) {
-  const response = await apiFetchServer<CustomerOrderDetails>(`/orders/${id}`, {
+  const response = await apiFetchServer<CustomerOrderDetails>(`/api/orders/${id}`, {
     cache: "no-store",
   });
   return response.data;
@@ -55,7 +56,7 @@ export async function getSingleOrder(id: string) {
 
 export async function cancelOrder(id: string) {
   const response = await apiFetchServer<OrderCreateResponse>(
-    `/orders/${id}/cancel`,
+    `/api/orders/${id}/cancel`,
     {
       method: "PATCH",
       cache: "no-store",
@@ -67,8 +68,8 @@ export async function cancelOrder(id: string) {
 
 export async function getAdminOrders(params: QuerySearchType) {
   const query = getQuery(params);
-  const response = await apiFetchServer<ApiFetchResult<AdminOrder>>(
-    `/admin/orders${query ? `?${query}` : ""}`,
+  const response = await apiFetchServer<AdminOrder[]>(
+    `/api/admin/orders${query ? `?${query}` : ""}`,
     {
       cache: "no-store",
     },
@@ -78,11 +79,11 @@ export async function getAdminOrders(params: QuerySearchType) {
 }
 export async function getAdminSingleOrders(id: string) {
   const response = await apiFetchServer<AdminOrder>(
-    `/admin/orders/${id}`,
+    `/api/admin/orders/${id}`,
     {
       cache: "no-store",
     },
   );
 
-  return response;
+  return response.data;
 }

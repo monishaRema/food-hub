@@ -34,10 +34,12 @@ Current backend base path:
 
 Authentication model:
 
-- login sets `access-token` and `refresh-token` as `httpOnly` cookies
-- protected requests depend on cookies, not bearer headers
-- browser requests to protected endpoints must use `credentials: "include"`
-- server-side requests should forward the incoming cookie header when needed
+- backend login returns `accessToken` and `refreshToken`
+- frontend writes those values into `access-token` and `refresh-token` `httpOnly` cookies
+- browser requests to protected routes should go through same-origin Next route handlers under `/api/*`
+- the Next `/api/*` proxy forwards the incoming cookie header to the backend
+- protected backend calls may still need token headers, so the proxy also forwards `authorization`, `access-token`, and `refresh-token`
+- when a protected backend request returns `401`, the proxy calls backend `/auth/refresh-token`, updates cookies, retries the original backend request, and only sends the user to login if refresh fails
 
 Standard response shapes:
 
@@ -105,10 +107,19 @@ Important backend quirks the frontend must account for today:
 Create `.env.local`:
 
 ```bash
-NEXT_PUBLIC_API_BASE_URL=http://localhost:5000/api
+NEXT_PUBLIC_BASE_URL=http://localhost:3000
+FRONTEND_BASE_URL=http://localhost:3000
+API_URL=http://localhost:5000/api
+BACKEND_BASE_URL=http://localhost:5000
+NEXT_PUBLIC_API_URL=http://localhost:5000/api
 ```
 
-If the frontend later adds a server-only API base URL, keep it separate from public browser config. Do not place backend secrets in this repository.
+Notes:
+
+- `FRONTEND_BASE_URL` is used by server-side helpers when they call the same-origin Next `/api/*` routes
+- `API_URL` is the backend base path used by the Next proxy
+- `NEXT_PUBLIC_API_URL` remains available, but protected browser auth and dashboard requests should prefer same-origin `/api/*` routes
+- do not place backend secrets in this repository
 
 ## Local Development
 
@@ -158,6 +169,28 @@ The current repo is still in scaffold stage. It already uses:
 - starter routes for home, meal list/detail, shop list/detail, login, and signup
 
 The documentation below defines the intended structure to grow this into a full product frontend.
+
+## Current Auth Architecture
+
+```txt
+Browser/client component
+  -> /api/*
+  -> Next route handler proxy
+  -> backend /api/*
+
+Server component / server action
+  -> apiFetchServer("/api/*")
+  -> same-origin Next route handler proxy
+  -> backend /api/*
+```
+
+Protected request behavior:
+
+1. proxy forwards cookies and token headers to backend
+2. backend may return `401` when `access-token` is missing, expired, or invalid
+3. proxy calls backend `/auth/refresh-token` using `refresh-token`
+4. if refresh succeeds, proxy updates cookies and retries the original backend request
+5. if refresh fails, proxy clears auth cookies and returns a session-expired response
 
 ## Documentation
 

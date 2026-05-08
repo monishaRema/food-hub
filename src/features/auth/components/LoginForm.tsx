@@ -25,12 +25,12 @@ import { toast } from "sonner";
 import Link from "next/link";
 import { useAuth } from "@/providers/AuthProvider";
 import { loginSchema } from "@/lib/schema/auth.schema";
-import { loginAction } from "../action/auth.action";
 import type { LoginType } from "@/lib/schema/auth.schema";
+import { loginAction } from "../action/auth.action";
 
 export function LoginForm({ ...props }: React.ComponentProps<typeof Card>) {
   const router = useRouter();
-  const { setUser } = useAuth();
+  const { refetchUser } = useAuth();
 
 
 
@@ -55,13 +55,13 @@ const defaultLogin: LoginType = {
           password: value.password.trim(),
         };
 
-       const result = await loginAction(payload)
+        const result = await loginAction(payload);
 
-       if(!result.success || !result.user){
-          return toast.error(result.message, { id: toastId });
-       }
-      
-        setUser(result.user);
+        if (!result.success) {
+          return toast.error(result.message || "Login failed", { id: toastId });
+        }
+
+        await refetchUser();
 
         toast.success("Login successful", { id: toastId });
         router.push("/");

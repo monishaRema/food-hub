@@ -6,7 +6,7 @@ export default async function ProviderMealPage({
   params,
 }: ParamsIdType) {
   const { id } = await params;
-  const meal = await getProviderMealById(id)
+  const meal = await getProviderMealById(id);
 
-  return <ProviderMealDetails meal={meal.data} />;
+  return <ProviderMealDetails meal={meal} />;
 }

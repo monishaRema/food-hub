@@ -14,8 +14,8 @@ http://localhost:5000/api
 
 - centralize HTTP calls in one API layer
 - normalize success and error responses in one place
-- always include credentials for protected browser requests
-- forward cookies from server-rendered requests when calling protected backend endpoints
+- always use same-origin Next route handlers for protected browser requests
+- forward cookies from server-rendered requests when calling protected Next `/api/*` endpoints
 - never trust client-calculated totals, role, or ownership fields
 
 ## Suggested API Layer Structure
@@ -40,12 +40,28 @@ src/
 
 The shared API client should:
 
-- read the base URL from environment
+- read the correct base URL from environment
 - support `GET`, `POST`, `PATCH`, and `DELETE`
 - default JSON headers when a JSON body is sent
 - parse the backend `success/message/data` envelope
 - surface `errorDetails` in a typed way
 - support `credentials: "include"` in browser requests
+- keep server-side protected requests on same-origin `/api/*`
+
+## Current Protected Request Path
+
+```txt
+browser -> /api/* -> Next route handler proxy -> backend /api/*
+server -> apiFetchServer("/api/*") -> Next route handler proxy -> backend /api/*
+```
+
+The route handler proxy is responsible for:
+
+- forwarding the incoming cookie header
+- forwarding `authorization`, `access-token`, and `refresh-token` headers when available
+- calling backend `/auth/refresh-token` after a `401`
+- retrying the original backend request with the refreshed access token
+- clearing auth cookies when refresh fails
 
 ## Route Groups to Integrate
 
@@ -162,6 +178,12 @@ UI should treat these as first-class states:
 - `404` missing resource
 - `409` business-rule conflict
 
+Auth-specific handling:
+
+- backend protected requests may return `401` for expired or invalid access tokens
+- backend refresh may return `403` for invalid refresh tokens
+- the Next proxy should translate refresh failure into a cleared session and login redirect flow at the app level
+
 Examples:
 
 - cancel order after it is no longer cancellable -> `409`
@@ -188,3 +210,5 @@ Use client-side requests for:
 - provider meal create/update/delete
 - provider order status changes
 - admin mutations
+
+Protected browser mutations should still prefer same-origin `/api/*` routes instead of talking to the backend origin directly.

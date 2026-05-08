@@ -35,6 +35,8 @@ src/
 - signup form
 - current-user hooks or loaders
 - auth guards and redirects
+- server actions that coordinate login cookie creation when needed
+- client auth state used for UX, not authorization
 
 ### `features/meals`
 
@@ -109,6 +111,7 @@ Keep these concerns separate:
 - route files decide page composition
 - feature modules own domain-specific UI and actions
 - `lib/api` owns HTTP details
+- `app/api` route handlers own backend proxy, refresh, and retry details
 - `types` owns shared contract types
 
 ## First Modules To Build

@@ -28,6 +28,8 @@ Ship the frontend in stages that match the backend's implemented capabilities.
 - logout flow
 - current-session bootstrap
 - role-aware redirects
+- same-origin `/api/*` proxy for auth-aware requests
+- refresh-token retry flow for protected requests
 
 ## Phase 4: Customer Experience
 
@@ -63,6 +65,8 @@ Ship the frontend in stages that match the backend's implemented capabilities.
 ## Testing Priorities
 
 - auth flows with cookie-based sessions
+- proxy refresh-and-retry behavior on `401`
+- logout and invalid refresh-token cleanup
 - create order validation around one-provider rule
 - cancel order visibility by status
 - review submission only after delivered orders

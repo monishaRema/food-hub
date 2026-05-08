@@ -99,6 +99,7 @@ These names align better with the backend route groups:
 - global styles
 - metadata defaults
 - shared providers that truly apply to the whole app
+- client auth bootstrap for display-only state such as nav and sidebar
 
 ### Public layout
 
@@ -128,6 +129,8 @@ These names align better with the backend route groups:
 - admin navigation
 - stricter access checks
 
+Current dashboard route protection is server-enforced through `requireUser()` and `requireRole()` helpers rather than sidebar-only checks.
+
 ## Data Strategy by Route Type
 
 Use Server Components by default for:
@@ -153,3 +156,4 @@ Use Client Components selectively for:
 - do not put mutable request-specific auth logic high in shared layouts unless necessary
 - keep route params and search params handled at page level when possible
 - use route groups for organization, not as a substitute for clear feature boundaries
+- treat client auth state as UX only; real access checks belong in server helpers and backend authorization

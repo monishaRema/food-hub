@@ -1,13 +1,15 @@
 "use server"
 
-import { apiFetchServer } from "@/lib/api/apiFetchServer";
 import { cookies } from "next/headers";
+
+import { env } from "@/env";
+import { apiFetchServer } from "@/lib/api/apiFetchServer";
 import type { LoginType, RegisterUser } from "@/lib/schema/auth.schema";
-import type { AuthUser, LoggedInUser } from "@/types/user";
+import type { AuthUser } from "@/types/user";
 
 export async function registerUserAction (data: RegisterUser) {
 
-  const user = await apiFetchServer<AuthUser>(`/auth/register`, {
+  const user = await apiFetchServer<AuthUser>(`/api/auth/register`, {
               method: "POST",
               data: data,
               cache: "no-store"
@@ -17,55 +19,92 @@ export async function registerUserAction (data: RegisterUser) {
 
 }
 
-
-export async function loginAction(data: LoginType) {
-  const result = await apiFetchServer<LoggedInUser>(
-    `/auth/login`,
-    {
-      method: "POST",
-      data,
-      cache: "no-store",
+type LoginActionResult =
+  | {
+      success: true;
     }
-  );
+  | {
+      success: false;
+      message: string;
+    };
 
+type LoginResponse = {
+  user?: AuthUser;
+  accessToken?: string;
+  refreshToken?: string;
+};
+
+function shouldUseSecureCookies() {
+  try {
+    return new URL(env.FRONTEND_BASE_URL).protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
+function getTokenMaxAge(token: string) {
+  try {
+    const [, payload] = token.split(".");
+
+    if (!payload) {
+      return undefined;
+    }
+
+    const normalizedPayload = payload.replace(/-/g, "+").replace(/_/g, "/");
+    const decodedPayload = JSON.parse(
+      Buffer.from(normalizedPayload, "base64").toString("utf-8"),
+    ) as { exp?: number };
+
+    if (!decodedPayload.exp) {
+      return undefined;
+    }
+
+    const maxAge = decodedPayload.exp - Math.floor(Date.now() / 1000);
+
+    return maxAge > 0 ? maxAge : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+export async function loginAction(data: LoginType): Promise<LoginActionResult> {
+  const result = await apiFetchServer<LoginResponse>("/api/auth/login", {
+    method: "POST",
+    data,
+    cache: "no-store",
+  });
   const cookieStore = await cookies();
+  const accessToken = result.data?.accessToken;
+  const refreshToken = result.data?.refreshToken;
 
- if ( !result.data) {
+  if (!accessToken || !refreshToken) {
     return {
       success: false,
-      message: "Login failed",
+      message: "Login succeeded but the backend did not return auth tokens.",
     };
   }
 
-  const { user, accessToken, refreshToken } = result.data;
+  const accessTokenMaxAge = getTokenMaxAge(accessToken);
+  const refreshTokenMaxAge = getTokenMaxAge(refreshToken);
+  const secureCookies = shouldUseSecureCookies();
 
-  if (!accessToken || !refreshToken || !user) {
-    return {
-      success: false,
-      message: "Invalid login response from server",
-    };
-  }
-
-
-  cookieStore.set("accessToken", result.data.accessToken, {
+  cookieStore.set("access-token", accessToken, {
     httpOnly: true,
-    secure: true,
+    secure: secureCookies,
     sameSite: "lax",
     path: "/",
-    maxAge: 60 * 15,
+    ...(accessTokenMaxAge ? { maxAge: accessTokenMaxAge } : {}),
   });
 
-  cookieStore.set("refreshToken", result.data.refreshToken, {
+  cookieStore.set("refresh-token", refreshToken, {
     httpOnly: true,
-    secure: true,
+    secure: secureCookies,
     sameSite: "lax",
     path: "/",
-    maxAge: 60 * 60 * 24 * 7,
+    ...(refreshTokenMaxAge ? { maxAge: refreshTokenMaxAge } : {}),
   });
 
   return {
-      success: true,
-      message: "Login successful",
-      user: result.data.user
-    }
+    success: true,
+  };
 }

@@ -17,7 +17,7 @@ export default async function ProviderMealsPage({
     return (
       <section className="py-10">
         <div className="container mx-auto px-6">
-          <MealTable meals={meals.data} />
+          <MealTable meals={meals.data ?? []} />
           {meals.meta ? <PaginationControls meta={meals.meta} /> : null}
         </div>
       </section>
