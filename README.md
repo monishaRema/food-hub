@@ -107,11 +107,13 @@ Important backend quirks the frontend must account for today:
 Create `.env.local`:
 
 ```bash
-NEXT_PUBLIC_BASE_URL=http://localhost:3000
-FRONTEND_BASE_URL=http://localhost:3000
-API_URL=http://localhost:5000/api
-BACKEND_BASE_URL=http://localhost:5000
-NEXT_PUBLIC_API_URL=http://localhost:5000/api
+NEXT_PUBLIC_BASE_URL=https://food-hub-tawny.vercel.app
+NEXT_PUBLIC_API_URL=https://food-hub-backend-chi.vercel.app/api
+
+BACKEND_BASE_URL=https://food-hub-backend-chi.vercel.app
+FRONTEND_BASE_URL=https://food-hub-tawny.vercel.app
+API_URL=https://food-hub-backend-chi.vercel.app/api
+NODE_ENV=production
 ```
 
 Notes:
